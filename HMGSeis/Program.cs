@@ -186,9 +186,9 @@ namespace HMGSeis
             List<ZkPoints> myPoints_14U = new List<ZkPoints>();
             myPoints_14U = GetPointfromGroup(mySapModel, SelectedPointName);
 
-            SelectedPointName = "GPtSet_14D";
-            List<ZkPoints> myPoints_14D = new List<ZkPoints>();
-            myPoints_14D = GetPointfromGroup(mySapModel, SelectedPointName);
+            SelectedPointName = "GPtSet_24L";
+            List<ZkPoints> myPoints_24L = new List<ZkPoints>();
+            myPoints_24L = GetPointfromGroup(mySapModel, SelectedPointName);
 
 
 
