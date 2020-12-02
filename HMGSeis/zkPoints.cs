@@ -8,11 +8,24 @@ namespace HMGSeis
 {
     class ZkPoints:IComparable<ZkPoints>
     {
-        public double[] Coordinate
-        { get;
+        private double[] coordinate=new double[3] { 0,0,0};
+        private double x = 0;
+        private double y = 0;
+        private double z = 0;
+        private int index = 0;
+        private string name = "";
+       public double[] Coordinate {
+            get
+            { return coordinate; }
+            set
+            {
+                coordinate[0] = x;
+                coordinate[1] = y;
+                coordinate[2] = z;
+            }
 
-          set; }
-        public double x
+        }
+        public double X
         { get
             {
                 return x;
@@ -20,9 +33,9 @@ namespace HMGSeis
             set
             {
                 x = value;
-                this.Coordinate[0] = value;
+                this.coordinate[0] = value;
             } }
-        public double y {
+        public double Y {
             get
             {
                 return y;
@@ -30,9 +43,9 @@ namespace HMGSeis
             set
             {
                 y = value;
-                this.Coordinate[1] = value;
+                this.coordinate[1] = value;
             }}
-        public double z {
+        public double Z {
             get
             {
                 return z;
@@ -40,33 +53,43 @@ namespace HMGSeis
             set
             {
                 z = value;
-                this.Coordinate[2] = value;
+                this.coordinate[2] = value;
             }
         }
-        public int index { get; set; }
-        public string Name { get; set; }
+        public int Index
+        {
+            get { return index; }
+            set { index = value; }
+        }
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+                }
         //void public zkPoints(void);
         public  ZkPoints()
      {
             x = 0;y = 0;z = 0;
             index = 0;
             Name = "";
-            Coordinate = new double[3];
+            coordinate[0] = 0;
+            coordinate[1] = 0;
+            coordinate[2] = 0;
         }
         public ZkPoints(int _index, string _Name, double _x,double _y,double _z)
         {
             index = _index;
             Name = _Name;
             x = _x;y = _y;z = _z;
-            Coordinate = new double[3];
-            Coordinate[0] = _x;
-            Coordinate[1] = _y;
-            Coordinate[2] = _z;
+            coordinate = new double[3];
+            coordinate[0] = _x;
+            coordinate[1] = _y;
+            coordinate[2] = _z;
         }
 
         public int CompareTo(ZkPoints other)
         {
-            return this.x.CompareTo(other.x);
+            return this.X.CompareTo(other.X);
         }
     }
 
@@ -75,7 +98,7 @@ namespace HMGSeis
     {
         public int Compare(ZkPoints x, ZkPoints y)
         {
-            return x.x.CompareTo(y.x); 
+            return x.X.CompareTo(y.X); 
         }
     }
 }
