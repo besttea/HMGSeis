@@ -210,7 +210,7 @@ namespace HMGSeis
 
             myPoints_border_left = CreateBorderPoints(29000, 138000, myPoints_14U);
 
-
+            
 
 
             #endregion

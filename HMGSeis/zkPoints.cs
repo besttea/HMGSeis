@@ -8,10 +8,41 @@ namespace HMGSeis
 {
     class ZkPoints:IComparable<ZkPoints>
     {
-        public double[] Coordinate { get; set; }
-        public double x { get; set; }
-        public double y { get; set; }
-        public double z { get; set; }
+        public double[] Coordinate
+        { get;
+
+          set; }
+        public double x
+        { get
+            {
+                return x;
+            }
+            set
+            {
+                x = value;
+                this.Coordinate[0] = value;
+            } }
+        public double y {
+            get
+            {
+                return y;
+            }
+            set
+            {
+                y = value;
+                this.Coordinate[1] = value;
+            }}
+        public double z {
+            get
+            {
+                return z;
+            }
+            set
+            {
+                z = value;
+                this.Coordinate[2] = value;
+            }
+        }
         public int index { get; set; }
         public string Name { get; set; }
         //void public zkPoints(void);
