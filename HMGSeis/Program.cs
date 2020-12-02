@@ -198,7 +198,8 @@ namespace HMGSeis
 
 
             #endregion
-            #region Calculating the Points matrix
+
+            #region Calculating the Points border
 
             //prepare for data of points
             List<ZkPoints> myPoints_border_Up = new List<ZkPoints>();
@@ -228,15 +229,18 @@ namespace HMGSeis
             {
                 myPoints_border_Up[i].X = myPoints_border_Up[i - 1].X+DeltaLengthofborder;
                 myPoints_border_Up[i].Y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y;
-
                 myPoints_border_Up[i].Z = interpolationXtoZ(myPoints_border_Up[i].X, myPoints_24R);     
             }
             
 
+            #endregion
 
-
+            #region Add point Matrix
+            
 
             #endregion
+
+
 
             ///
             ///Write to CAD
@@ -339,9 +343,7 @@ namespace HMGSeis
             double up =0,down=0;
             if (x1 >= 0 && x1 <= 325282.2)
             {
-                //interpolor z1 from x1 and x3 to get z
-                //x0 = vetex1(0)(0): x = point3(0): z0 = vetex1(0)(2): z1 = vetex1(1)(2)
-                
+                //interpolate z1 from x1 and x3 to get z
                 for (int j = 0; j < myPointsList.Count; j++)
                 {
                     if (x1 > myPointsList[j].X)
