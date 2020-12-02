@@ -178,22 +178,59 @@ namespace HMGSeis
             // ret = mySapModel.SelectObj.PropertyArea("None");
 
             //get information from  group name "GPtSet_24U" 
+
             string SelectedPointName = "GPtSet_24R";
+            Console.WriteLine("Get point information from Group:{0}",SelectedPointName);
             List<ZkPoints> myPoints_24R = new List<ZkPoints>();
             myPoints_24R= GetPointfromGroup( mySapModel,  SelectedPointName);
 
             SelectedPointName = "GPtSet_14U";
+            Console.WriteLine("Get point information from Group:{0}",SelectedPointName);
             List<ZkPoints> myPoints_14U = new List<ZkPoints>();
             myPoints_14U = GetPointfromGroup(mySapModel, SelectedPointName);
 
             SelectedPointName = "GPtSet_24L";
+            Console.WriteLine("Get point information from Group:{0}",SelectedPointName);
             List<ZkPoints> myPoints_24L = new List<ZkPoints>();
             myPoints_24L = GetPointfromGroup(mySapModel, SelectedPointName);
 
+            Console.WriteLine("Finished to get point information );
 
+            
+            #endregion
+            #region Calculating the Points matrix
+            
+            //prepare for data of points
+            List<ZkPoints> myPoints_border_Up = new List<ZkPoints>();
+            List<ZkPoints> myPoints_border_Down = new List<ZkPoints>();
+            List<ZkPoints> myPoints_border_left = new List<ZkPoints>();
+            List<ZkPoints> myPoints_border_Right = new List<ZkPoints>();
 
+            int i=0;
+            foreach (ZkPoints tempPoint in myPoints_24R)
+            {
+                if(tempPoint.x>=0 && tempPoint.x <260738)
+                {
+                    tempPoint.index=i;
+                    myPoints_border_Down.add(tempPoint);
+                    i++;
+                }
 
+            }
+            i=0
+            foreach (ZkPoints tempPoint in myPoints_14U)
+            {
+                if(tempPoint.y>=29000 && tempPoint.y <138000)
+                {
+                    tempPoint.index=i;
+                    myPoints_border_Down.add(tempPoint);
+                    i++;
+                }
 
+            }
+            
+            
+            
             #endregion
 
             ///
