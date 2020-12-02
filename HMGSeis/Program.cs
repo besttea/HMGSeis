@@ -180,57 +180,39 @@ namespace HMGSeis
             //get information from  group name "GPtSet_24U" 
 
             string SelectedPointName = "GPtSet_24R";
-            Console.WriteLine("Get point information from Group:{0}",SelectedPointName);
+            Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
             List<ZkPoints> myPoints_24R = new List<ZkPoints>();
-            myPoints_24R= GetPointfromGroup( mySapModel,  SelectedPointName);
+            myPoints_24R = GetPointfromGroup(mySapModel, SelectedPointName);
 
             SelectedPointName = "GPtSet_14U";
-            Console.WriteLine("Get point information from Group:{0}",SelectedPointName);
+            Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
             List<ZkPoints> myPoints_14U = new List<ZkPoints>();
             myPoints_14U = GetPointfromGroup(mySapModel, SelectedPointName);
 
             SelectedPointName = "GPtSet_24L";
-            Console.WriteLine("Get point information from Group:{0}",SelectedPointName);
+            Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
             List<ZkPoints> myPoints_24L = new List<ZkPoints>();
             myPoints_24L = GetPointfromGroup(mySapModel, SelectedPointName);
 
-            Console.WriteLine("Finished to get point information );
+            Console.WriteLine("Finished to get point information ");
 
-            
+
             #endregion
             #region Calculating the Points matrix
-            
+
             //prepare for data of points
             List<ZkPoints> myPoints_border_Up = new List<ZkPoints>();
             List<ZkPoints> myPoints_border_Down = new List<ZkPoints>();
             List<ZkPoints> myPoints_border_left = new List<ZkPoints>();
             List<ZkPoints> myPoints_border_Right = new List<ZkPoints>();
 
-            int i=0;
-            foreach (ZkPoints tempPoint in myPoints_24R)
-            {
-                if(tempPoint.x>=0 && tempPoint.x <260738)
-                {
-                    tempPoint.index=i;
-                    myPoints_border_Down.add(tempPoint);
-                    i++;
-                }
+            myPoints_border_Down = CreateBorderPoints(0, 260738, myPoints_24R);
 
-            }
-            i=0
-            foreach (ZkPoints tempPoint in myPoints_14U)
-            {
-                if(tempPoint.y>=29000 && tempPoint.y <138000)
-                {
-                    tempPoint.index=i;
-                    myPoints_border_Down.add(tempPoint);
-                    i++;
-                }
+            myPoints_border_left = CreateBorderPoints(29000, 138000, myPoints_14U);
 
-            }
-            
-            
-            
+
+
+
             #endregion
 
             ///
@@ -308,13 +290,35 @@ namespace HMGSeis
             }
 
         }
-/// <summary>
-/// Get Point information from Group
-/// </summary>
-/// <param name="i"></param>
-/// <param name="ret"></param>
-/// <param name="mySapModel"></param>
-/// <param name="SelectedPointName"></param>
+
+        private static List<ZkPoints> CreateBorderPoints(double border_Up,double border_Down, List<ZkPoints> myPoints)
+        {
+            
+            int  i = 0;
+            List<ZkPoints> myPoints_border=new List<ZkPoints>();
+            foreach (ZkPoints tempPoint in myPoints)
+            {
+                if (tempPoint.y >= border_Up && tempPoint.y < border_Down)
+                {
+                    tempPoint.index = i;
+                    myPoints_border.Add(tempPoint);
+                    i++;
+                }
+
+            }
+
+            return myPoints_border;
+        }
+
+
+
+        /// <summary>
+        /// Get Point information from Group
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="ret"></param>
+        /// <param name="mySapModel"></param>
+        /// <param name="SelectedPointName"></param>
         private static List<ZkPoints> GetPointfromGroup( cSapModel mySapModel, string SelectedPointName)
         {
             int NumberSelected_Point = 0;
