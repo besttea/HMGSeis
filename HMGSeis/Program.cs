@@ -219,12 +219,27 @@ namespace HMGSeis
 
             myPoints_border_left = CreateBorderPoints(250000, 326000, myPoints_14U);
 
+
+
             myPoints_border_Right = CreateBorderPoints(250000, 326000, myPoints_14U);
 
-            for (int i = 0; i < myPoints_border_left.Count; i++)
+            double left_border = myPoints_border_Down[0].Y;
+            double right_border = myPoints_border_Right[myPoints_border_Right.Count-1].Y;
+            double DeltaLengthofborder = (right_border - left_border) / (myPoints_border_Up.Count - 1);
+            //the left low's y is divided of left line.
+            for (int i = 0; i < myPoints_border_left.Count-1; i++)
             {
                 myPoints_border_left[i].X = 0;
+                myPoints_border_left[i].Y = left_border+ DeltaLengthofborder*i;
                 myPoints_border_left[i].Z= myPoints_border_Down[0].Z;
+                string name = "";
+                //
+                //createing new points of boundary
+                // 
+                ret = mySapModel.PointObj.AddCartesian(myPoints_border_left[i].X, 
+                                                        myPoints_border_left[i].Y,
+                                                        myPoints_border_left[i].Z, ref name);
+                myPoints_border_left[i].Name = name;
             }
             // Console.WriteLine("Before Sorting,myPoints_24R:");
             // PrintList(myPoints_24R);
@@ -237,8 +252,8 @@ namespace HMGSeis
             //
             //Create myPoints_border_Up
             //
-            double left_border = 0;double right_border = 325282.2;
-            double DeltaLengthofborder = (right_border - left_border)/(myPoints_border_Up.Count-1);
+            left_border = 0; right_border = 325282.2;
+            DeltaLengthofborder = (right_border - left_border)/(myPoints_border_Up.Count-1);
 
 
             for (int i = 1; i < myPoints_border_Up.Count-1; i++)
@@ -272,9 +287,10 @@ namespace HMGSeis
 
                 for (int i = 0; i < myPoints_border_Up.Count-1; i++)
                 {//create point coordinate of layer 0
-                    double x = myPoints_border_left[0].X + DeltaLengthofborder*i; myPoints_Hor[i].X = x;
-                    double y = myPoints_border_Right[i].Y; myPoints_Hor[i].Y = y;
-                    double z = interpolationXtoZ(myPoints_Hor[i].X, myPoints_24R); myPoints_Hor[i].Z = z;
+
+                    double x = myPoints_border_left[j].X + DeltaLengthofborder*i; myPoints_Hor[i].X = x;
+                    double y = myPoints_border_Right[j].Y; myPoints_Hor[i].Y = y;//same j ,same Y
+                    double z = interpolationXtoZ(x, myPoints_24R); myPoints_Hor[i].Z = z;
                     string name = "";
                     ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
                     myPoints_Hor[i].Name = name;
@@ -390,12 +406,13 @@ namespace HMGSeis
             
             int  i ;i = 0;
             List<ZkPoints> myPoints_border=new List<ZkPoints>();
+            
             foreach (ZkPoints tempPoint in myPoints)
             {
-                if (tempPoint.X >= border_Low && tempPoint.X < border_Up)
+                if ( tempPoint.X >= border_Low && tempPoint.X < border_Up)
                 {
-                    tempPoint.Index = i;
-                    myPoints_border.Add(tempPoint);
+                    ZkPoints myPoint = new ZkPoints(i,tempPoint.Name,tempPoint.X,tempPoint.Y,tempPoint.Z);//create a new class instance !
+                    myPoints_border.Add(myPoint);
                     i++;
                 }
 
@@ -403,40 +420,84 @@ namespace HMGSeis
 
             return myPoints_border;
         }
-
-        private static double interpolationXtoZ(double x1,List<ZkPoints> myPointsList)
+        private static double interpolationXtoX(double x1,
+                                                List<ZkPoints> myPointsList_Up,
+                                                List<ZkPoints> myPointsList_Left,
+                                                List<ZkPoints> myPointsList_Right,
+                                                List<ZkPoints> myPointsList_Low)
         {
 
-            double  z=0;
+            double x = 0;
             ZkPoints UpPoint = new ZkPoints();
             ZkPoints DownPoint = new ZkPoints();
 
-            double up =0,down=0;
+            double up = 0, down = 0;
             if (x1 >= 0 && x1 <= 325282.2)
             {
                 //interpolate z1 from x1 and x3 to get z
-                for (int j = 0; j < myPointsList.Count; j++)
+                for (int j = 0; j < myPointsList_Low.Count; j++)
                 {
-                    if (x1 > myPointsList[j].X)
+                    if (x1 > myPointsList_Low[j].X)
                     {
-                        down = myPointsList[j].X;
-                        DownPoint = myPointsList[j];//get lower limits of point
+                        down = myPointsList_Low[j].X;
+                        DownPoint = myPointsList_Low[j];//get lower limits of point
                     }
                     else
                     {
-                        up = myPointsList[j].X;
-                        UpPoint = myPointsList[j];//get Uper limits of point
+                        up = myPointsList_Low[j].X;
+                        UpPoint = myPointsList_Low[j];//get Uper limits of point
                         break;
                     }
 
                 }
                 //point3(2) = z1 - (z1 - z0) * (x1 - x) / (x1 - x0)
 
-                      z=DownPoint.Z+ (UpPoint.Z-DownPoint.Z)*(x1 - down) / (up - down);
+                x = DownPoint.Z + (UpPoint.Z - DownPoint.Z) * (x1 - down) / (up - down);
 
             }
 
-            return z;
+            return x;
+        }
+        private static double interpolationXtoZ(double X,int m,int n,
+                                                List<ZkPoints> myPointsList_Up, 
+                                                List<ZkPoints> myPointsList_Left, 
+                                                List<ZkPoints> myPointsList_Right, 
+                                                List<ZkPoints> myPointsList_Low)
+        {
+            double  Z=0;
+            ZkPoints UpPoint = new ZkPoints();
+            ZkPoints LowPoint = new ZkPoints();
+
+            double X1 =0,X0=0,Y1=0,Y0=0,Z1=0,Z0=0;
+            if (X >= 0 && X <= 325282.2)
+            {
+                //interpolate z1 from x1 and x3 to get z
+                for (int j = 0; j < myPointsList_Low.Count; j++)
+                {
+                    if (X > myPointsList_Low[j].X)
+                    {
+                        X0 = myPointsList_Low[j].X;  //X0                      
+                        Z0 = myPointsList_Low[j].Z;//Z0
+                        LowPoint = myPointsList_Low[j];//get lower limits of point
+                    }
+                    else
+                    {
+                        X1 = myPointsList_Low[j].X;   //X1                    
+                        Z1 = myPointsList_Low[j].Z;   //Z1
+                        UpPoint = myPointsList_Low[j];//get Uper limits of point
+                        break;
+                    }
+
+                }
+                //point3(2) = z1 - (z1 - z0) * (x1 - x) / (x1 - x0)
+                Y0 = myPointsList_Left[m].Y;
+                Y1 = myPointsList_Right[m].Y;
+
+                Z =Z0+ (Z1-Z0)*(X1 - X) / (X1 - X0);
+
+            }
+
+            return Z;
         }
 
         /// <summary>
@@ -463,7 +524,7 @@ namespace HMGSeis
             {
                 double x = 0;double y = 0;double z = 0;
                 ret = mySapModel.PointObj.GetCoordCartesian(ObjectName_Points[i], ref x, ref y, ref z);
-                ZkPoints tempPt = new ZkPoints(i, ObjectName_Points[i], x, y, z);
+                ZkPoints tempPt = new ZkPoints(i, ObjectName_Points[i], x, y, z);//create a new instance
                 myPoints.Add(tempPt);
                // Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName_Points[i], x, y, z);
             }
