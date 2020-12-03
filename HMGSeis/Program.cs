@@ -183,7 +183,10 @@ namespace HMGSeis
             Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
             List<ZkPoints> myPoints_24R = new List<ZkPoints>();
             myPoints_24R = GetPointfromGroup(mySapModel, SelectedPointName);
-
+            //
+            Console.WriteLine("myPoints_24R");
+            PrintList(myPoints_24R);
+            //
             SelectedPointName = "GPtSet_14U";
             Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
             List<ZkPoints> myPoints_14U = new List<ZkPoints>();
@@ -218,25 +221,82 @@ namespace HMGSeis
                 myPoints_border_left[i].X = 0;
                 myPoints_border_left[i].Z= myPoints_border_Down[0].Z;
             }
-
+            Console.WriteLine("Before Sorting,myPoints_24R:");
+            PrintList(myPoints_24R);
+            myPoints_24R.Sort(new ComparePoints_X());
+            Console.WriteLine("After Sorting,myPoints_24R:");
+            PrintList(myPoints_24R);
             myPoints_border_Up = CreateBorderPoints(0, 260738, myPoints_24R);
-
+            Console.WriteLine("myPoints_border_Up:");
+            PrintList(myPoints_border_Up);
             double left_border = 0;double right_border = 325282.2;
             double DeltaLengthofborder = (right_border - left_border)/(myPoints_border_Up.Count-1);
-            myPoints_24R.Sort(new ComparePoints_X());
+
 
             for (int i = 1; i < myPoints_border_Up.Count; i++)
             {
-                myPoints_border_Up[i].X = myPoints_border_Up[i - 1].X+DeltaLengthofborder;
-                myPoints_border_Up[i].Y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y;
-                myPoints_border_Up[i].Z = interpolationXtoZ(myPoints_border_Up[i].X, myPoints_24R);     
+                x= myPoints_border_Up[i - 1].X+DeltaLengthofborder; myPoints_border_Up[i].X = x;
+                y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y; myPoints_border_Up[i].Y = y;
+                z= interpolationXtoZ(myPoints_border_Up[i].X, myPoints_24R); myPoints_border_Up[i].Z = z;
+
+                //string name = "";
+                //ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
+               // myPoints_border_Up[i].Name = name;
             }
-            
+
+            List<ZkPoints> myPoints_Hor = new List<ZkPoints>();
+
+            double DeltaLength = 0;
+            //myPoints_24R.Sort(new ComparePoints_X());
+            myPoints_Hor = CreateBorderPoints(0, 260738, myPoints_24R);
+            Console.WriteLine("myPoints_Hor:");
+            PrintList(myPoints_Hor);
+            Console.WriteLine("myPoints_24R:");
+            PrintList(myPoints_24R);
+            for (int j = 0; j < myPoints_border_Right.Count-1; j++)
+            {                
+                left_border = myPoints_border_left[j].X; right_border = myPoints_border_Right[j].X;
+
+                DeltaLength = (right_border - left_border) / (myPoints_border_Up.Count - 1);
+
+                for (int i = 0; i < myPoints_border_Up.Count-1; i++)
+                {//create point coordinate of layer 0
+                    x = myPoints_border_left[0].X + DeltaLengthofborder*i; myPoints_Hor[i].X = x;
+                    y = myPoints_border_Right[i].Y; myPoints_Hor[i].Y = y;
+                    z = interpolationXtoZ(myPoints_Hor[i].X, myPoints_24R); myPoints_Hor[i].Z = z;
+                    string name = "";
+                    ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
+                    myPoints_Hor[i].Name = name;
+                }
+            }
 
             #endregion
 
             #region Add point Matrix
-            
+            ///
+            ///point matrix
+            ///
+
+            List<Solid> SolidList = new List<Solid>();
+            for (int j = 0; j < myPoints_border_Right.Count-1; j++)
+            {
+                for (int i = 0; i < myPoints_border_Down.Count-1; i++)
+                {
+                    Solid tempSolid = new Solid();
+                    ZkPoints[] BoxPointsMatrix = new ZkPoints[8];
+                    for (int k = 0; k < 7; k++)
+                    {
+                        BoxPointsMatrix[k].Index = k;
+                        BoxPointsMatrix[k].Name = myPoints_border_Down[i].Name;
+                        BoxPointsMatrix[k].X = myPoints_border_Down[i].X;
+                        BoxPointsMatrix[k].Y = myPoints_border_Down[i].Y;
+                        BoxPointsMatrix[k].Z = myPoints_border_Down[i].Z;
+                    }
+
+                }
+            }
+
+
 
             #endregion
 
@@ -314,14 +374,14 @@ namespace HMGSeis
 
         }
 
-        private static List<ZkPoints> CreateBorderPoints(double border_Up,double border_Down, List<ZkPoints> myPoints)
+        private static List<ZkPoints> CreateBorderPoints(double border_Low, double border_Up, List<ZkPoints> myPoints)
         {
             
-            int  i = 0;
+            int  i ;i = 0;
             List<ZkPoints> myPoints_border=new List<ZkPoints>();
             foreach (ZkPoints tempPoint in myPoints)
             {
-                if (tempPoint.X >= border_Up && tempPoint.X < border_Down)
+                if (tempPoint.X >= border_Low && tempPoint.X < border_Up)
                 {
                     tempPoint.Index = i;
                     myPoints_border.Add(tempPoint);
@@ -394,15 +454,20 @@ namespace HMGSeis
                 ret = mySapModel.PointObj.GetCoordCartesian(ObjectName_Points[i], ref x, ref y, ref z);
                 ZkPoints tempPt = new ZkPoints(i, ObjectName_Points[i], x, y, z);
                 myPoints.Add(tempPt);
-                Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName_Points[i], x, y, z);
+               // Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName_Points[i], x, y, z);
             }
             myPoints.Sort(new ComparePoints_X());
-            foreach (ZkPoints tempPt in myPoints)
-            {
+           // PrintList(myPoints);
+            return myPoints;
+        }
 
+        private static void PrintList(List<ZkPoints> myPointsList)
+        {
+
+            foreach (ZkPoints tempPt in myPointsList)
+            {
                 Console.WriteLine(@"{0},{1},{2},{3},{4}", tempPt.Index, tempPt.Name, tempPt.X, tempPt.Y, tempPt.Z);
             }
-            return myPoints;
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HMGSeis
 {
-    class ZkPoints:IComparable<ZkPoints>
+   public class ZkPoints:IComparable<ZkPoints>
     {
         private double[] coordinate=new double[3] { 0,0,0};
         private double x = 0;
@@ -90,6 +90,10 @@ namespace HMGSeis
         public int CompareTo(ZkPoints other)
         {
             return this.X.CompareTo(other.X);
+        }
+        public void Printme()
+        {  
+                Console.WriteLine(@"{0},{1},{2},{3},{4}", this.Index, this.Name, this.X, this.Y, this.Z);
         }
     }
 

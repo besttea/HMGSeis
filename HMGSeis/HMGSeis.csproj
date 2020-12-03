@@ -67,6 +67,7 @@
     <Compile Include="Acadimport.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Solid.cs" />
     <Compile Include="zkPoints.cs" />
   </ItemGroup>
   <ItemGroup>
