@@ -12,9 +12,9 @@ namespace HMGSeis
 {
     class Program
     {
-        private static double x;
-        private static double y;
-        private static double z;
+        // private static double x;
+        // private static double y;
+        // private static double z;
         [STAThread]
         /// <summary>
         /// Sap ApiMain 
@@ -176,9 +176,9 @@ namespace HMGSeis
             Console.WriteLine("Get Information from Object of Group....");
             //eItemType itemtype = eItemType.SelectedObjects;
             // ret = mySapModel.SelectObj.PropertyArea("None");
-
-            //get information from  group name "GPtSet_24U" 
-
+            //
+            //get information from  group name "GPtSet_24R" 
+            //
             string SelectedPointName = "GPtSet_24R";
             Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
             List<ZkPoints> myPoints_24R = new List<ZkPoints>();
@@ -187,23 +187,28 @@ namespace HMGSeis
             Console.WriteLine("myPoints_24R");
             PrintList(myPoints_24R);
             //
+            //get information from  group name "GPtSet_14U" 
+            //
             SelectedPointName = "GPtSet_14U";
             Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
             List<ZkPoints> myPoints_14U = new List<ZkPoints>();
             myPoints_14U = GetPointfromGroup(mySapModel, SelectedPointName);
-
+            //
+            //get information from  group name "GPtSet_24L" 
+            //
             SelectedPointName = "GPtSet_24L";
             Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
             List<ZkPoints> myPoints_24L = new List<ZkPoints>();
             myPoints_24L = GetPointfromGroup(mySapModel, SelectedPointName);
 
-            Console.WriteLine("Finished to get point information ");
+            Console.WriteLine("Finished to get point information................... ");
 
 
             #endregion
 
             #region Calculating the Points border
-
+            Console.WriteLine("Preper for  Calculating the Points borde...................");
+            //
             //prepare for data of points
             List<ZkPoints> myPoints_border_Up = new List<ZkPoints>();
             List<ZkPoints> myPoints_border_Down = new List<ZkPoints>();
@@ -221,23 +226,26 @@ namespace HMGSeis
                 myPoints_border_left[i].X = 0;
                 myPoints_border_left[i].Z= myPoints_border_Down[0].Z;
             }
-            Console.WriteLine("Before Sorting,myPoints_24R:");
-            PrintList(myPoints_24R);
-            myPoints_24R.Sort(new ComparePoints_X());
+            // Console.WriteLine("Before Sorting,myPoints_24R:");
+            // PrintList(myPoints_24R);
+            // myPoints_24R.Sort(new ComparePoints_X());
             Console.WriteLine("After Sorting,myPoints_24R:");
             PrintList(myPoints_24R);
             myPoints_border_Up = CreateBorderPoints(0, 260738, myPoints_24R);
             Console.WriteLine("myPoints_border_Up:");
             PrintList(myPoints_border_Up);
+            //
+            //Create myPoints_border_Up
+            //
             double left_border = 0;double right_border = 325282.2;
             double DeltaLengthofborder = (right_border - left_border)/(myPoints_border_Up.Count-1);
 
 
             for (int i = 1; i < myPoints_border_Up.Count; i++)
             {
-                x= myPoints_border_Up[i - 1].X+DeltaLengthofborder; myPoints_border_Up[i].X = x;
-                y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y; myPoints_border_Up[i].Y = y;
-                z= interpolationXtoZ(myPoints_border_Up[i].X, myPoints_24R); myPoints_border_Up[i].Z = z;
+              int  x= myPoints_border_Up[i - 1].X+DeltaLengthofborder; myPoints_border_Up[i].X = x;
+              int  y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y; myPoints_border_Up[i].Y = y;
+              int  z= interpolationXtoZ(myPoints_border_Up[i].X, myPoints_24R); myPoints_border_Up[i].Z = z;
 
                 //string name = "";
                 //ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
@@ -261,9 +269,9 @@ namespace HMGSeis
 
                 for (int i = 0; i < myPoints_border_Up.Count-1; i++)
                 {//create point coordinate of layer 0
-                    x = myPoints_border_left[0].X + DeltaLengthofborder*i; myPoints_Hor[i].X = x;
-                    y = myPoints_border_Right[i].Y; myPoints_Hor[i].Y = y;
-                    z = interpolationXtoZ(myPoints_Hor[i].X, myPoints_24R); myPoints_Hor[i].Z = z;
+                   int x = myPoints_border_left[0].X + DeltaLengthofborder*i; myPoints_Hor[i].X = x;
+                   int y = myPoints_border_Right[i].Y; myPoints_Hor[i].Y = y;
+                   int z = interpolationXtoZ(myPoints_Hor[i].X, myPoints_24R); myPoints_Hor[i].Z = z;
                     string name = "";
                     ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
                     myPoints_Hor[i].Name = name;
