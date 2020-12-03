@@ -243,9 +243,9 @@ namespace HMGSeis
 
             for (int i = 1; i < myPoints_border_Up.Count-1; i++)
             {
-              int  x= myPoints_border_Up[0].X+DeltaLengthofborder*i; myPoints_border_Up[i].X = x;
-              int  y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y; myPoints_border_Up[i].Y = y;
-              int  z= interpolationXtoZ(myPoints_border_Up[i].X, myPoints_24R); myPoints_border_Up[i].Z = z;
+              double  x= myPoints_border_Up[0].X+DeltaLengthofborder*i; myPoints_border_Up[i].X = x;
+                double y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y; myPoints_border_Up[i].Y = y;
+                double z = interpolationXtoZ(myPoints_border_Up[i].X, myPoints_24R); myPoints_border_Up[i].Z = z;
 
                 string name = "";
                 //
@@ -272,9 +272,9 @@ namespace HMGSeis
 
                 for (int i = 0; i < myPoints_border_Up.Count-1; i++)
                 {//create point coordinate of layer 0
-                   int x = myPoints_border_left[0].X + DeltaLengthofborder*i; myPoints_Hor[i].X = x;
-                   int y = myPoints_border_Right[i].Y; myPoints_Hor[i].Y = y;
-                   int z = interpolationXtoZ(myPoints_Hor[i].X, myPoints_24R); myPoints_Hor[i].Z = z;
+                    double x = myPoints_border_left[0].X + DeltaLengthofborder*i; myPoints_Hor[i].X = x;
+                    double y = myPoints_border_Right[i].Y; myPoints_Hor[i].Y = y;
+                    double z = interpolationXtoZ(myPoints_Hor[i].X, myPoints_24R); myPoints_Hor[i].Z = z;
                     string name = "";
                     ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
                     myPoints_Hor[i].Name = name;
@@ -461,7 +461,7 @@ namespace HMGSeis
          
             for (int i = 0; i < NumberSelected_Point; i++)
             {
-                double x = y = z = 0;
+                double x = 0;double y = 0;double z = 0;
                 ret = mySapModel.PointObj.GetCoordCartesian(ObjectName_Points[i], ref x, ref y, ref z);
                 ZkPoints tempPt = new ZkPoints(i, ObjectName_Points[i], x, y, z);
                 myPoints.Add(tempPt);
