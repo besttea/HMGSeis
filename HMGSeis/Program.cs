@@ -287,10 +287,33 @@ namespace HMGSeis
 
                 for (int i = 0; i < myPoints_border_Up.Count-1; i++)
                 {//create point coordinate of layer 0
+                    //
+                    //Lv:Xup,Y3,Xd,Yd;
+                    //
+                    double Xup=myPoints_border_Up[i].X;
+                    double Y3=myPoints_border_Right[myPoints_border_Right.count-1].Y;
+                    double Xd=myPoints_border_down[i].X;
+                    double Xd=myPoints_border_down[i].Y;
+                    double Kv=k(Xup,Y3,Xd,Yd),dv=d(Xup,Y3,Xd,Yd);
+                    //
+                    //Lu:X0,Y4,Xr,Yr
+                    //
+                    double X0=myPoints_border_down[0].X;
+                    double Y4=myPoints_border_Left[i].Y;
+                    double Xr=myPoints_border_Right[i].X;
+                    double Xr=myPoints_border_Right[i].Y;
+                    double Ku=k(X0,Y4,Xr,Yr),du=d(X0,Y4,Xr,Yr); 
 
-                    double x = myPoints_border_left[j].X + DeltaLengthofborder*i; myPoints_Hor[i].X = x;
-                    double y = myPoints_border_Right[j].Y; myPoints_Hor[i].Y = y;//same j ,same Y
+
+                    double x = (du-dv)/(Kv-Ku); myPoints_Hor[i].X = x;
+
+
+                    double y = Kv*(du-dv)/(Kv-Ku)+dv; myPoints_Hor[i].Y = y;//interaction of Lu and Lv
+
+
                     double z = interpolationXtoZ(x, myPoints_24R); myPoints_Hor[i].Z = z;
+
+
                     string name = "";
                     ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
                     myPoints_Hor[i].Name = name;
@@ -401,7 +424,9 @@ namespace HMGSeis
 
         }
 
-        private static List<ZkPoints> CreateBorderPoints(double border_Low, double border_Up, List<ZkPoints> myPoints)
+        private static List<ZkPoints> CreateBorderPoints(double border_Low, 
+                                                        double border_Up, 
+                                                        List<ZkPoints> myPoints)
         {
             
             int  i ;i = 0;
@@ -411,7 +436,11 @@ namespace HMGSeis
             {
                 if ( tempPoint.X >= border_Low && tempPoint.X < border_Up)
                 {
-                    ZkPoints myPoint = new ZkPoints(i,tempPoint.Name,tempPoint.X,tempPoint.Y,tempPoint.Z);//create a new class instance !
+                    ZkPoints myPoint = new ZkPoints(i,
+                                                    tempPoint.Name,
+                                                    tempPoint.X,
+                                                    tempPoint.Y,
+                                                    tempPoint.Z);//create a new class instance !
                     myPoints_border.Add(myPoint);
                     i++;
                 }
@@ -458,6 +487,21 @@ namespace HMGSeis
 
             return x;
         }
+        private static double K(double x1,double x2,double y1,double y2)
+        {
+           if((x2-x1)==0) return 0
+           else return  (y2-y1)/(x2-x1);
+
+        }
+        private static double d(double x1,double x2,double y1,double y2)
+        {
+            return y2-K(x1,x2,y1,y2)*x2;
+        }
+
+
+
+
+
         private static double interpolationXtoZ(double X,int m,int n,
                                                 List<ZkPoints> myPointsList_Up, 
                                                 List<ZkPoints> myPointsList_Left, 
