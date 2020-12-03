@@ -243,7 +243,7 @@ namespace HMGSeis
 
             for (int i = 1; i < myPoints_border_Up.Count; i++)
             {
-              int  x= myPoints_border_Up[i - 1].X+DeltaLengthofborder; myPoints_border_Up[i].X = x;
+              int  x= myPoints_border_Up[0].X+DeltaLengthofborder*i; myPoints_border_Up[i].X = x;
               int  y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y; myPoints_border_Up[i].Y = y;
               int  z= interpolationXtoZ(myPoints_border_Up[i].X, myPoints_24R); myPoints_border_Up[i].Z = z;
 
