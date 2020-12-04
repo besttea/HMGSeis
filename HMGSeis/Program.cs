@@ -389,61 +389,64 @@ namespace HMGSeis
             ///
             ///point matrix
             ///
+            List<List<Solid>> SolidMatrix =new List<List<Solid>>();
 
-            for (int j = 0; j < myPoints_border_left.Count-1; j++)
+            for (int j = 0; j < myPoints_border_left.Count - 1; j++)
             {
 
-            }
+            
 
-            List<Solid> SolidList = new List<Solid>();           
-            for (int i = 0; i < myPoints_border_Down.Count - 1; i++)
-            {
-                Solid tempSolid = new Solid();
-                double[] X = new double[8];
-                double[] Y = new double[8];
-                double[] Z = new double[8];
-                string[] Name = new string[8];
-                string BoxName = "";
-                //
-                //Lay Up
-                //
-                for (int k = 0; k < 2; k++)
+                List<Solid> SolidList = new List<Solid>();           
+                for (int i = 0; i < myPoints_border_Down.Count - 1; i++)
                 {
-                    X[k] = PointsListLU[k][i].X;
-                    Y[k] = PointsListLU[k][i].Y;
-                    Z[k] = PointsListLU[k][i].Z;
-                }
-                for (int k = 2; k < 4; k++)
-                {
-                    X[k] = PointsListLU[k-2][i+1].X;
-                    Y[k] = PointsListLU[k-2][i+1].Y;
-                    Z[k] = PointsListLU[k-2][i+1].Z;
-                }
-                //
-                //
-                //
-                for (int k = 4; k < 6; k++)
-                {
-                    X[k] = PointsListLU[k-4][i].X;
-                    Y[k] = PointsListLU[k-4][i].Y;
-                    Z[k] = PointsListLU[k-4][i].Z - 11651;
-                }
-                for (int k = 6; k < 8; k++)
-                {
-                    X[k] = PointsListLU[k - 6 ][i+1].X;
-                    Y[k] = PointsListLU[k - 6 ][i+1].Y;
-                    Z[k] = PointsListLU[k - 6 ][i+1].Z - 11651;
-                }
+                    Solid tempSolid = new Solid();
+                    double[] X = new double[8];
+                    double[] Y = new double[8];
+                    double[] Z = new double[8];
+                    string[] Name = new string[8];
+                    string BoxName = "";
+                    //
+                    //Lay Up
+                    //
+                    for (int k = 0; k < 2; k++)
+                    {
+                        X[k] = PointsListLU[k+j][i].X;
+                        Y[k] = PointsListLU[k+j][i].Y;
+                        Z[k] = PointsListLU[k+j][i].Z;
+                    }
+                    for (int k = 2; k < 4; k++)
+                    {
+                        X[k] = PointsListLU[k-2+j][i+1].X;
+                        Y[k] = PointsListLU[k-2+j][i+1].Y;
+                        Z[k] = PointsListLU[k-2+j][i+1].Z;
+                    }
+                    //
+                    //
+                    //
+                    for (int k = 4; k < 6; k++)
+                    {
+                        X[k] = PointsListLU[k-4+j][i].X;
+                        Y[k] = PointsListLU[k-4+j][i].Y;
+                        Z[k] = PointsListLU[k-4+j][i].Z - 11651;
+                    }
+                    for (int k = 6; k < 8; k++)
+                    {
+                        X[k] = PointsListLU[k-6+j][i+1].X;
+                        Y[k] = PointsListLU[k-6+j][i+1].Y;
+                        Z[k] = PointsListLU[k-6+j][i+1].Z - 11651;
+                    }
 
-                ret = mySapModel.SolidObj.AddByCoord(ref X,
-                                                     ref Y,
-                                                     ref Z, 
-                                                     ref BoxName);
-                tempSolid.Name = BoxName;
-                tempSolid.X = X;
-                tempSolid.Y = Y;
-                tempSolid.Z = Z;
-                SolidList.Add(tempSolid);
+                    ret = mySapModel.SolidObj.AddByCoord(ref X,
+                                                         ref Y,
+                                                         ref Z, 
+                                                         ref BoxName);
+                    tempSolid.Name = BoxName;
+                    tempSolid.X = X;
+                    tempSolid.Y = Y;
+                    tempSolid.Z = Z;
+                    SolidList.Add(tempSolid);
+                }
+                SolidMatrix.Add(SolidList);
             }
             #endregion
             ret = mySapModel.View.RefreshView(0, false);
