@@ -214,7 +214,9 @@ namespace HMGSeis
             List<ZkPoints> myPoints_border_Down = new List<ZkPoints>();
             List<ZkPoints> myPoints_border_left = new List<ZkPoints>();
             List<ZkPoints> myPoints_border_Right = new List<ZkPoints>();
-
+            ///
+            ///Define the borderPoints of area
+            ///
             myPoints_border_Down = CreateBorderPoints(0, 251000, myPoints_24R);
             myPoints_border_Right = CreateBorderPoints(250000, 326000, myPoints_14U);
             myPoints_border_left = CreateBorderPoints(250000, 326000, myPoints_14U);
@@ -254,11 +256,11 @@ namespace HMGSeis
             // Console.WriteLine("Before Sorting,myPoints_24R:");
             // PrintList(myPoints_24R);
             // myPoints_24R.Sort(new ComparePoints_X());
-            Console.WriteLine("After Sorting,myPoints_24R:");
-            PrintList(myPoints_24R);
+            //Console.WriteLine("After Sorting,myPoints_24R:");
+            //PrintList(myPoints_24R);
             myPoints_border_Up = CreateBorderPoints(0, 260738, myPoints_24R);
-            Console.WriteLine("myPoints_border_Up:");
-            PrintList(myPoints_border_Up);
+            //Console.WriteLine("myPoints_border_Up:");
+            //PrintList(myPoints_border_Up);
             //
             //Create myPoints_border_Up
             //
