@@ -218,7 +218,7 @@ namespace HMGSeis
             ///Define the borderPoints of area
             ///
             //myPoints_border_Down = CreateBorderPoints(0, 251000, myPoints_24R);
-            myPoints_border_Down = CreateBorderPoints(0, 251000, myPoints_24L);
+            myPoints_border_Down = CreateBorderPoints(0, 219000, myPoints_24L);
             // myPoints_border_Right = CreateBorderPoints(250000, 326000, myPoints_14U);170098.98, 218099.2
             myPoints_border_Right = CreateBorderPoints(170100, 219000, myPoints_14U);
             //myPoints_border_left = CreateBorderPoints(250000, 326000, myPoints_14U);
@@ -261,7 +261,8 @@ namespace HMGSeis
             // myPoints_24R.Sort(new ComparePoints_X());
             //Console.WriteLine("After Sorting,myPoints_24R:");
             //PrintList(myPoints_24R);
-            myPoints_border_Up = CreateBorderPoints(0, 260738, myPoints_24R);
+            //myPoints_border_Up = CreateBorderPoints(0, 260738, myPoints_24R);
+            myPoints_border_Up = CreateBorderPoints(0, 219000, myPoints_24L);//new limits
             //Console.WriteLine("myPoints_border_Up:");
             //PrintList(myPoints_border_Up);
             //
@@ -290,7 +291,8 @@ namespace HMGSeis
 
             double DeltaLength = 0;
             //myPoints_24R.Sort(new ComparePoints_X());
-            myPoints_Hor = CreateBorderPoints(0, 260738, myPoints_24R);
+            // myPoints_Hor = CreateBorderPoints(0, 260738, myPoints_24R); 
+               myPoints_Hor = CreateBorderPoints(0, 219000, myPoints_24L);
             //Console.WriteLine("myPoints_Hor:");
             //PrintList(myPoints_Hor);
             //
