@@ -38,7 +38,7 @@ namespace HMGSeis
         public string Name { get => name; set => name = value; }
         internal ZkPoints[] PointsMatrix { get => pointsMatrix; set => pointsMatrix = value; }
         internal double[] X { get => x; set => x = value; }
-        internal double[] Y { get => x; set => x = value; }
-        internal double[] Z { get => x; set => x = value; }
+        internal double[] Y { get => y; set => y = value; }
+        internal double[] Z { get => z; set => z = value; }
     }
 }
