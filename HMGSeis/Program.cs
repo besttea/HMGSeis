@@ -217,10 +217,13 @@ namespace HMGSeis
             ///
             ///Define the borderPoints of area
             ///
-            myPoints_border_Down = CreateBorderPoints(0, 251000, myPoints_24R);
-            myPoints_border_Right = CreateBorderPoints(250000, 326000, myPoints_14U);
-            myPoints_border_left = CreateBorderPoints(250000, 326000, myPoints_14U);
-//
+            //myPoints_border_Down = CreateBorderPoints(0, 251000, myPoints_24R);
+            myPoints_border_Down = CreateBorderPoints(0, 251000, myPoints_24L);
+            // myPoints_border_Right = CreateBorderPoints(250000, 326000, myPoints_14U);170098.98, 218099.2
+            myPoints_border_Right = CreateBorderPoints(170100, 219000, myPoints_14U);
+            //myPoints_border_left = CreateBorderPoints(250000, 326000, myPoints_14U);
+            myPoints_border_left = CreateBorderPoints(170100, 219000, myPoints_14U);
+            //
             double left_border = myPoints_border_Down[0].Y;
             double right_border = myPoints_border_Right[myPoints_border_Right.Count-1].Y;
             double DeltaLengthofborder = (right_border - left_border) / (myPoints_border_Right.Count - 1);
