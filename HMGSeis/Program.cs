@@ -187,19 +187,19 @@ namespace HMGSeis
             Console.WriteLine("myPoints_24R");
             PrintList(myPoints_24R);
             //
-            //get information from  group name "GPtSet_14U" 
+            //get information from  group name "GPtSet_7D" 
             //
-            SelectedPointName = "GPtSet_14U";
+            SelectedPointName = "GPtSet_7D";
             Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
-            List<ZkPoints> myPoints_14U = new List<ZkPoints>();
-            myPoints_14U = GetPointfromGroup(mySapModel, SelectedPointName);
+            List<ZkPoints> myPoints_7D = new List<ZkPoints>();
+            myPoints_7D = GetPointfromGroup(mySapModel, SelectedPointName);
             //
             //get information from  group name "GPtSet_24L" 
             //
-            SelectedPointName = "GPtSet_24L";
+            SelectedPointName = "GPtSet_24R";
             Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
-            List<ZkPoints> myPoints_24L = new List<ZkPoints>();
-            myPoints_24L = GetPointfromGroup(mySapModel, SelectedPointName);
+            List<ZkPoints> myPoints_24R = new List<ZkPoints>();
+            myPoints_24R = GetPointfromGroup(mySapModel, SelectedPointName);
 
             Console.WriteLine("Finished to get point information................... ");
 
@@ -215,21 +215,21 @@ namespace HMGSeis
             List<ZkPoints> myPoints_border_left = new List<ZkPoints>();
             List<ZkPoints> myPoints_border_Right = new List<ZkPoints>();
 
-            myPoints_border_Down = CreateBorderPoints(0, 251000, myPoints_24R);//348954.7,26024.089
-            myPoints_border_Right = CreateBorderPoints(250000, 326000, myPoints_14U);
-            myPoints_border_left = CreateBorderPoints(250000, 326000, myPoints_14U);//
-//
+            myPoints_border_Down = CreateBorderPoints(349000, 416500, myPoints_24R);//348954.7,26024.089
+            myPoints_border_Right = CreateBorderPoints(349000, 326000, myPoints_7D);
+            myPoints_border_left = CreateBorderPoints(349000, 380000, myPoints_7D);//379574.7,96809.96
+                                                                                    //
             double left_border = myPoints_border_Down[0].Y;
             double right_border = myPoints_border_Right[myPoints_border_Right.Count-1].Y;
             double DeltaLengthofborder = (right_border - left_border) / (myPoints_border_Right.Count - 1);
             //
-            //the left low's y is divided of left line.
+            //the right low's y is divided of left line.
             //
             for (int i = 0; i < myPoints_border_left.Count; i++)
             {
-                myPoints_border_left[i].X = 0;
-                myPoints_border_left[i].Y = left_border+ DeltaLengthofborder*i;
-                myPoints_border_left[i].Z= myPoints_border_Down[0].Z;
+                myPoints_border_Right[i].X = 0;
+                myPoints_border_Right[i].Y = left_border+ DeltaLengthofborder*i;
+                myPoints_border_Right[i].Z= myPoints_border_Down[0].Z;
                 string name = ""; string name2 = "";
                 //
                 //createing new points of boundary
@@ -240,7 +240,7 @@ namespace HMGSeis
                 ret = mySapModel.PointObj.AddCartesian(myPoints_border_left[i].X,
                                         myPoints_border_left[i].Y,
                                         myPoints_border_left[i].Z-11651.0, ref name2);
-                myPoints_border_left[i].Name = name;
+                myPoints_border_Right[i].Name = name;
             }
             // Console.WriteLine("Before Sorting,myPoints_24R:");
             // PrintList(myPoints_24R);
@@ -253,7 +253,8 @@ namespace HMGSeis
             //
             //Create myPoints_border_Up
             //
-            left_border = 0; right_border = 325282.2;
+            left_border = myPoints_border_Down[0].X;
+            right_border = myPoints_border_Down[myPoints_border_Down.Count-1].X;
             DeltaLengthofborder = (right_border - left_border)/(myPoints_border_Up.Count-1);
             for (int i = 1; i < myPoints_border_Up.Count; i++)
             {
