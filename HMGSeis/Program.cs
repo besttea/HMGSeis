@@ -180,6 +180,11 @@ namespace HMGSeis
             //get information from  group name "GPtSet_24R" 
             //
             string SelectedPointName = "GPtSet_24R";
+
+
+
+
+
             Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
             List<ZkPoints> myPoints_24R = new List<ZkPoints>();
             myPoints_24R = GetPointfromGroup(mySapModel, SelectedPointName);
