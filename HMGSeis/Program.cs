@@ -239,16 +239,7 @@ namespace HMGSeis
                                                         myPoints_border_left[i].Z, ref name);
                 ret = mySapModel.PointObj.AddCartesian(myPoints_border_left[i].X,
                                         myPoints_border_left[i].Y,
-                                        myPoints_border_left[i].Z-11651.0, ref name2); 
-                ret = mySapModel.PointObj.AddCartesian(myPoints_border_left[i].X,
-                                        myPoints_border_left[i].Y,
-                                         -19151, ref name2);
-                ret = mySapModel.PointObj.AddCartesian(myPoints_border_left[i].X,
-                                        myPoints_border_left[i].Y,
-                                        -27251, ref name2);
-                ret = mySapModel.PointObj.AddCartesian(myPoints_border_left[i].X,
-                                        myPoints_border_left[i].Y,
-                                        -36531, ref name2);
+                                        myPoints_border_left[i].Z-11651.0, ref name2);
                 myPoints_border_left[i].Name = name;
             }
             // Console.WriteLine("Before Sorting,myPoints_24R:");
@@ -275,9 +266,6 @@ namespace HMGSeis
                 // 
                ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
                ret = mySapModel.PointObj.AddCartesian(x, y, z-11651.0, ref name2);
-                ret = mySapModel.PointObj.AddCartesian(x, y,-19151, ref name2);
-                ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name2);
-                ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name2);
                 myPoints_border_Up[i].Name = name;
             }
             int counts = myPoints_border_Right.Count - 1;
@@ -360,9 +348,6 @@ namespace HMGSeis
                     string name = ""; string name2 = "";
                     ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
                     ret = mySapModel.PointObj.AddCartesian(x, y, z-11651.0, ref name2);
-                    ret = mySapModel.PointObj.AddCartesian(x, y, -19151, ref name2);
-                    ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name2);
-                    ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name2);
                     ///
                     myPoints_Hor[i].Name = name;
                     //
@@ -460,37 +445,6 @@ namespace HMGSeis
                     tempSolid.Y = Y;
                     tempSolid.Z = Z;
                     SolidList.Add(tempSolid);
-
-                    for (int m = 0; m < 8; m++)
-                    {
-                        if (m<4) Z[m]=Z[m] - 11651;
-                        else    Z[m] = -19151;
-
-                    }
-                    ret = mySapModel.SolidObj.AddByCoord(ref X,
-                                                         ref Y,
-                                                         ref Z,
-                                                         ref BoxName);
-                    for (int m = 0; m < 8; m++)
-                    {
-                        if (m<4) Z[m] = -19151;
-                        else Z[m] = -27251;
-
-                    }
-                    ret = mySapModel.SolidObj.AddByCoord(ref X,
-                                                         ref Y,
-                                                         ref Z,
-                                                         ref BoxName);
-                    for (int m = 0; m < 8; m++)
-                    {   if (m<4) Z[m] = -27251;
-                        else Z[m] = -36531;
-
-                    }
-                    ret = mySapModel.SolidObj.AddByCoord(ref X,
-                                                         ref Y,
-                                                         ref Z,
-                                                         ref BoxName);
-
                 }
                 SolidMatrix.Add(SolidList);
             }
