@@ -180,17 +180,19 @@ namespace HMGSeis
             //get information from  group name "GPtSet_24R" 
             //
             string SelectedPointName = "GPtSet_24R";
-
-
-
-
-
             Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
             List<ZkPoints> myPoints_24R = new List<ZkPoints>();
             myPoints_24R = GetPointfromGroup(mySapModel, SelectedPointName);
             //
             Console.WriteLine("myPoints_24R");
             PrintList(myPoints_24R);
+            //
+            //get information from  group name "GPtSet_24L" 
+            //
+            SelectedPointName = "GPtSet_24L";
+            Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
+            List<ZkPoints> myPoints_24L = new List<ZkPoints>();
+            myPoints_24L = GetPointfromGroup(mySapModel, SelectedPointName);
             //
             //get information from  group name "GPtSet_14U" 
             //
@@ -199,13 +201,12 @@ namespace HMGSeis
             List<ZkPoints> myPoints_14U = new List<ZkPoints>();
             myPoints_14U = GetPointfromGroup(mySapModel, SelectedPointName);
             //
-            //get information from  group name "GPtSet_24L" 
+            //get information from  group name "GPtSet_7D" 
             //
-            SelectedPointName = "GPtSet_24L";
+            SelectedPointName = "GPtSet_7D";
             Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
-            List<ZkPoints> myPoints_24L = new List<ZkPoints>();
-            myPoints_24L = GetPointfromGroup(mySapModel, SelectedPointName);
-
+            List<ZkPoints> GPtSet_7D = new List<ZkPoints>();
+            GPtSet_7D = GetPointfromGroup(mySapModel, SelectedPointName);
             Console.WriteLine("Finished to get point information................... ");
 
 
@@ -232,29 +233,24 @@ namespace HMGSeis
             //
             for (int i = 0; i < myPoints_border_left.Count; i++)
             {
-                myPoints_border_left[i].X = 0;
-                myPoints_border_left[i].Y = left_border+ DeltaLengthofborder*i;
-                myPoints_border_left[i].Z= myPoints_border_Down[0].Z;
-                string name = ""; string name2 = "";
+                double x = 0;
+                double y = left_border + DeltaLengthofborder * i;
+                double z = myPoints_border_Down[0].Z;
+
+                myPoints_border_left[i].X =x;
+                myPoints_border_left[i].Y =y ;
+                myPoints_border_left[i].Z=z ;
+                string name = "";
                 //
                 //createing new points of boundary
                 // 
-                ret = mySapModel.PointObj.AddCartesian(myPoints_border_left[i].X, 
-                                                        myPoints_border_left[i].Y,
-                                                        myPoints_border_left[i].Z, ref name);
-                ret = mySapModel.PointObj.AddCartesian(myPoints_border_left[i].X,
-                                        myPoints_border_left[i].Y,
-                                        myPoints_border_left[i].Z-11651.0, ref name2); 
-                ret = mySapModel.PointObj.AddCartesian(myPoints_border_left[i].X,
-                                        myPoints_border_left[i].Y,
-                                         -19151, ref name2);
-                ret = mySapModel.PointObj.AddCartesian(myPoints_border_left[i].X,
-                                        myPoints_border_left[i].Y,
-                                        -27251, ref name2);
-                ret = mySapModel.PointObj.AddCartesian(myPoints_border_left[i].X,
-                                        myPoints_border_left[i].Y,
-                                        -36531, ref name2);
+                ret = mySapModel.PointObj.AddCartesian(x,y,z, ref name);
                 myPoints_border_left[i].Name = name;
+                ret = mySapModel.PointObj.AddCartesian(x,y,z-11651.0, ref name); 
+                ret = mySapModel.PointObj.AddCartesian(x,y,-19151, ref name);
+                ret = mySapModel.PointObj.AddCartesian(x,y,-27251, ref name);
+                ret = mySapModel.PointObj.AddCartesian(x,y,-36531, ref name);
+                
             }
             // Console.WriteLine("Before Sorting,myPoints_24R:");
             // PrintList(myPoints_24R);
@@ -271,21 +267,28 @@ namespace HMGSeis
             DeltaLengthofborder = (right_border - left_border)/(myPoints_border_Up.Count-1);
             for (int i = 1; i < myPoints_border_Up.Count; i++)
             {
-              double x= myPoints_border_Up[0].X+DeltaLengthofborder*i; myPoints_border_Up[i].X = x;
-              double y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y; myPoints_border_Up[i].Y = y;
-              double z = myPoints_border_Down[i].Z; myPoints_border_Up[i].Z = z;
-              string name = ""; string name2 = "";
+              double x= myPoints_border_Up[0].X+DeltaLengthofborder*i; 
+              double y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y; 
+              double z = myPoints_border_Down[i].Z; 
+              string name = "";
+                myPoints_border_Up[i].X = x;
+                myPoints_border_Up[i].Y = y;
+                myPoints_border_Up[i].Z = z;
                 //
                 //createing new points of boundary
                 // 
-               ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
-               ret = mySapModel.PointObj.AddCartesian(x, y, z-11651.0, ref name2);
-                ret = mySapModel.PointObj.AddCartesian(x, y,-19151, ref name2);
-                ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name2);
-                ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name2);
+                ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
                 myPoints_border_Up[i].Name = name;
+                ret = mySapModel.PointObj.AddCartesian(x, y, z-11651.0, ref name);
+                ret = mySapModel.PointObj.AddCartesian(x, y,-19151, ref name);
+                ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name);
+                ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name);
+
             }
-            int counts = myPoints_border_Right.Count - 1;
+            #endregion
+
+            #region Create Points matrix
+
             List<ZkPoints> myPoints_Hor = new List<ZkPoints>();
 
             double DeltaLength = 0;
@@ -403,7 +406,9 @@ namespace HMGSeis
                 uplayPointsList.Add(Point);
             }
             PointsListLU.Add(uplayPointsList);
+            #endregion
 
+            
 
             #region Add point Matrix
             ///
@@ -503,7 +508,7 @@ namespace HMGSeis
             ret = mySapModel.View.RefreshView(0, false);
 
        
-        #endregion
+        
 
 
 
