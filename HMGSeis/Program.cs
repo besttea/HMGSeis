@@ -504,14 +504,13 @@ namespace HMGSeis
                 List<ZkPoints> uplayPointsList = new List<ZkPoints>();
                 for (int i = 0; i < myPoints_border_Up.Count; i++)
                 {
-
-                    int lindex; string lname; double lx; double ly; double lz;
-                    ZkPoints Point = new ZkPoints(lindex = (myPoints_border_Left.Count - 1) * myPoints_border_Down.Count + i,
-                                         lname = myPoints_border_Up[i].Name,
-                                         lx = myPoints_border_Up[i].X,
-                                         ly = myPoints_border_Up[i].Y,
-                                         lz = myPoints_border_Up[i].Z);
-                    uplayPointsList.Add(Point);
+                int lindex= lindex = (myPoints_border_Left.Count - 1) * myPoints_border_Down.Count + i;
+                string lname = myPoints_border_Up[i].Name;
+                double lx = myPoints_border_Up[i].X;
+                double ly = myPoints_border_Up[i].Y;
+                double lz= myPoints_border_Up[i].Z;
+                ZkPoints Point = new ZkPoints(lindex,lname ,lx,ly,lz) ;
+                uplayPointsList.Add(Point);
                 }
                 PointsListLU.Add(uplayPointsList);
                 #endregion
