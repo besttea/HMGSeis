@@ -65,7 +65,7 @@ namespace HMGSeis
             string ModelPath = ModelDirectory + System.IO.Path.DirectorySeparatorChar + ModelName;
             Console.WriteLine("ModelPath={0}", ModelPath);
             #endregion
-           //dimension the SapObject as cOAPI type
+            //dimension the SapObject as cOAPI type
             cOAPI mySapObject = null;
             //Use ret to check if functions return successfully (ret = 0) or fail (ret = nonzero)
             int ret = 0;
@@ -193,24 +193,24 @@ namespace HMGSeis
             //
             //
             //bool Left_Right_flag = true,Top_Down_flag=true;
-            bool Left_Right_flag = true, Top_Down_flag = true;
+            bool Left_Right_flag = false, Top_Down_flag = false;
             //Define the range of area
             if (Left_Right_flag)
             {
-                    if (Top_Down_flag)
-                    {
+                if (Top_Down_flag)
+                {
                     //0,19890.62，0        250738.12,29670.839,2462.44   325282.2.,137255.18，0
                     //Left and Up direction
                     //points set is myPoints_24L and myPoints_7D
-                    double XWL_down = 0, XWR_down = Math.Round( 250738.12,0), XHR_top =Math.Round( 325282.2,0)+1000;
-                    myPoints_border_Up = CreateBorderPoints(XWL_down, XWR_down+1000, myPoints_24R);
-                    myPoints_border_Down = CreateBorderPoints(XWL_down, XWR_down+1000, myPoints_24R);//need modify
+                    double XWL_down = 0, XWR_down = Math.Round(250738.12, 0), XHR_top = Math.Round(325282.2, 0) + 1000;
+                    myPoints_border_Up = CreateBorderPoints(XWL_down, XWR_down + 1000, myPoints_24R);
+                    myPoints_border_Down = CreateBorderPoints(XWL_down, XWR_down + 1000, myPoints_24R);//need modify
 
-                    myPoints_border_Left = CreateBorderPoints(XWR_down - 1000,XHR_top, myPoints_14U);
-                    myPoints_border_Right = CreateBorderPoints(XWR_down - 1000,XHR_top, myPoints_14U);//need modify
+                    myPoints_border_Left = CreateBorderPoints(XWR_down - 1000, XHR_top, myPoints_14U);
+                    myPoints_border_Right = CreateBorderPoints(XWR_down - 1000, XHR_top, myPoints_14U);//need modify
                 }
-                    else
-                    {
+                else
+                {
                     //0,19890.62，0        250738.12,29670.839,2462.44   325282.2.,137255.18，0
                     //Left and down direction
                     //points set is myPoints_24L and myPoints_7D
@@ -224,8 +224,8 @@ namespace HMGSeis
             }
             else
             {
-                    if (Top_Down_flag)
-                    {
+                if (Top_Down_flag)
+                {
                     //0,19890.62，0        250738.12,29670.839,2462.44   325282.2.,137255.18，0
                     //Right and Up direction
                     //
@@ -240,17 +240,17 @@ namespace HMGSeis
                     //myPoints_border_Left = CreateBorderPoints(XWL_down, XHR_top, myPoints_7D);
                 }
                 else
-                    {
+                {
                     //304577.83,-76564.4        325727.9,-27670.59,   416000.,-18352.27
                     //Right and down direction
                     //points set is myPoints_24L and myPoints_7D
                     double XWL_down = 325727, XWR_down = 417000, XHR_top = 380000;
-                        myPoints_border_Up = CreateBorderPoints(XWL_down, XWR_down, myPoints_24L);
-                        myPoints_border_Down = CreateBorderPoints(XWL_down, XWR_down, myPoints_24L);//need modify
+                    myPoints_border_Up = CreateBorderPoints(XWL_down, XWR_down, myPoints_24L);
+                    myPoints_border_Down = CreateBorderPoints(XWL_down, XWR_down, myPoints_24L);//need modify
 
-                        myPoints_border_Left = CreateBorderPoints(0, XWL_down + 1000, myPoints_7D);
-                        myPoints_border_Right = CreateBorderPoints(0, XWL_down + 1000, myPoints_7D);//need modify
-                    }
+                    myPoints_border_Left = CreateBorderPoints(0, XWL_down + 1000, myPoints_7D);
+                    myPoints_border_Right = CreateBorderPoints(0, XWL_down + 1000, myPoints_7D);//need modify
+                }
             }
             //
             //create the points objects of border
@@ -325,7 +325,7 @@ namespace HMGSeis
 
 
                 }
-                
+
             }
             else
             {
@@ -425,19 +425,19 @@ namespace HMGSeis
                     //Right and Down direction.Create myPoints_border_down
                     //
                     double left_border = myPoints_border_Left[0].X;
-                    double right_border = myPoints_border_Down[myPoints_border_Up.Count-1].X;//Need modify
+                    double right_border = myPoints_border_Up[myPoints_border_Up.Count - 1].X;//Need modify
                     double DeltaLengthofborder = (right_border - left_border) / (myPoints_border_Up.Count - 1);
-                    for (int i = 1; i < myPoints_border_Up.Count; i++)
+                    for (int i = 0; i < myPoints_border_Up.Count; i++)
                     {
                         double x = myPoints_border_Left[0].X + DeltaLengthofborder * i;
                         double y = myPoints_border_Left[0].Y;
-                        double z = myPoints_border_Down[i].Z;
+                        double z = myPoints_border_Up[i].Z;
                         string name = "";
                         myPoints_border_Up[i].X = x;
                         myPoints_border_Up[i].Y = y;
                         myPoints_border_Up[i].Z = z;
                         //
-                        //createing new points of boundary
+                        //Createing New Points Object of boundary
                         // 
                         ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
                         myPoints_border_Up[i].Name = name;
@@ -450,19 +450,42 @@ namespace HMGSeis
                 }
             }
             #endregion
-                ///
-                ///
-                ///
-                #region Create Points matrix
+            ///
+            ///
+            ///
+            #region Create Points matrix
+            //
+            List<ZkPoints> myPoints_Hor = new List<ZkPoints>();
+            //
+            if (Left_Right_flag)
+            {
+                if (Top_Down_flag)
+                {
+                    myPoints_Hor = CreateBorderPoints(0, 250738+1000, myPoints_24R);
+                }
+                else
+                {
+                    myPoints_Hor = CreateBorderPoints(0, 210322+1000, myPoints_24L);
+                }
+                 }
+            else
+            {
+                if (Top_Down_flag)
+                {
+                    myPoints_Hor = CreateBorderPoints(348954-1000, 416000+1000, myPoints_24R);
+                }
+                else
+                {
+                    myPoints_Hor = CreateBorderPoints(325727-1000, 416000+1000, myPoints_24L);
+                }
+                 }
+  
+            //Need modify
+                //Console.WriteLine("myPoints_Hor:");
+                //PrintList(myPoints_Hor);
                 //
-                List<ZkPoints> myPoints_Hor = new List<ZkPoints>();
                 //
-                myPoints_Hor = CreateBorderPoints(0, 260738, myPoints_24R);//Need modify
-                                                                           //Console.WriteLine("myPoints_Hor:");
-                                                                           //PrintList(myPoints_Hor);
-                                                                           //
-                                                                           //
-                                                                           //
+                //
                 List<List<ZkPoints>> PointsListLU = new List<List<ZkPoints>>();
                 //
                 for (int j = 0; j < myPoints_border_Right.Count; j++)
@@ -490,14 +513,16 @@ namespace HMGSeis
                         PointsListLU.Add(downlayPointsList);
                         continue;
                     }
-                    //
-                    //add the left line of points
-                    //
-                    ZkPoints Firstpoints = new ZkPoints(lindex = myPoints_border_Left[j].Index,
-                                                        lname = myPoints_border_Left[j].Name,
-                                                        lx = myPoints_border_Left[j].X,
-                                                        ly = myPoints_border_Left[j].Y,
-                                                        lz = myPoints_border_Left[j].Z);
+                //
+                //Add Points Set of The Left Column
+                //
+                lindex = myPoints_border_Left[j].Index;
+                lname = myPoints_border_Left[j].Name;
+                lx = myPoints_border_Left[j].X;
+                ly = myPoints_border_Left[j].Y;
+                //lz = myPoints_border_Left[j].Z;
+                lz = myPoints_border_Down[0].Z;//change this varibles that would lead to mismatch the vetex of block with the border vetex!!!
+                ZkPoints Firstpoints = new ZkPoints(lindex, lname, lx, ly, lz);
                     //
                     //the first and the last data of myPoints_Hor is error
                     //
@@ -536,27 +561,31 @@ namespace HMGSeis
                         ///
                         ///
                         ///
-                        string name = ""; string name2 = "";
+                        string name = ""; 
                         ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
-                        ret = mySapModel.PointObj.AddCartesian(x, y, z - 11651.0, ref name2);
-                        ret = mySapModel.PointObj.AddCartesian(x, y, -19151, ref name2);
-                        ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name2);
-                        ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name2);
+                        myPoints_Hor[i].Name = name;
+                        ret = mySapModel.PointObj.AddCartesian(x, y, z - 11651.0, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -19151, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name);
                         ///
                         myPoints_Hor[i].Name = name;
-                        //
-                        ZkPoints Point = new ZkPoints(lindex = i + j * myPoints_border_Down.Count,
-                                                            lname = name,
-                                                            lx = x,
-                                                            ly = y,
-                                                            lz = z);
+                    //
+                    lindex = i + j * myPoints_border_Down.Count;
+                    lname = name;
+                    lx = x;
+                    ly = y;
+                    lz = z;
+                    ZkPoints Point = new ZkPoints(lindex, lname, lx, ly, lz);
                         layPointsList.Add(Point);
                     }
-                    ZkPoints Endpoints = new ZkPoints(lindex = myPoints_Hor[myPoints_Hor.Count - 1].Index,
-                                        lname = myPoints_Hor[myPoints_Hor.Count - 1].Name,
-                                        lx = myPoints_Hor[myPoints_Hor.Count - 1].X,
-                                        ly = myPoints_Hor[myPoints_Hor.Count - 1].Y,
-                                        lz = myPoints_Hor[myPoints_Hor.Count - 1].Z);
+
+                    lindex = myPoints_Hor[myPoints_Hor.Count - 1].Index;
+                    lname =myPoints_Hor[myPoints_Hor.Count - 1].Name;
+                    lx = myPoints_Hor[myPoints_Hor.Count - 1].X;
+                    ly = myPoints_Hor[myPoints_Hor.Count - 1].Y;
+                    lz= myPoints_Hor[myPoints_Hor.Count - 1].Z;
+                    ZkPoints Endpoints = new ZkPoints(lindex ,lname ,lx ,ly,lz );
                     layPointsList.Add(Endpoints);
 
                     PointsListLU.Add(layPointsList);
@@ -576,17 +605,16 @@ namespace HMGSeis
                 uplayPointsList.Add(Point);
                 }
                 PointsListLU.Add(uplayPointsList);
-                #endregion
-                #region Add point Matrix
-                ///
-                ///point matrix
-                ///
-                List<List<Solid>> SolidMatrix = new List<List<Solid>>();
+                ret = mySapModel.View.RefreshView(0, false);
+            #endregion
+            #region Add point Matrix
+            ///
+            ///point matrix
+            ///
+            List<List<Solid>> SolidMatrix = new List<List<Solid>>();
 
                 for (int j = 0; j < myPoints_border_Left.Count - 1; j++)
                 {
-
-
 
                     List<Solid> SolidList = new List<Solid>();
                     for (int i = 0; i < myPoints_border_Down.Count - 1; i++)
@@ -637,7 +665,8 @@ namespace HMGSeis
                         tempSolid.Y = Y;
                         tempSolid.Z = Z;
                         SolidList.Add(tempSolid);
-
+                        ret = mySapModel.View.RefreshView(0, false);
+                    ///
                         for (int m = 0; m < 8; m++)
                         {
                             if (m < 4) Z[m] = Z[m] - 11651;
@@ -754,7 +783,7 @@ namespace HMGSeis
             
             foreach (ZkPoints tempPoint in myPoints)
             {
-                if ( tempPoint.X >= border_Low && tempPoint.X < border_Up)
+                if ( tempPoint.X >= border_Low && tempPoint.X <= border_Up)
                 {
                     ZkPoints myPoint = new ZkPoints(i,
                                                     tempPoint.Name,
