@@ -193,33 +193,53 @@ namespace HMGSeis
             //
             //
             //bool Left_Right_flag = true,Top_Down_flag=true;
-            bool Left_Right_flag = false, Top_Down_flag = false;
+            bool Left_Right_flag = true, Top_Down_flag = true;
             //Define the range of area
             if (Left_Right_flag)
             {
                     if (Top_Down_flag)
                     {
+                    //0,19890.62，0        250738.12,29670.839,2462.44   325282.2.,137255.18，0
+                    //Left and Up direction
+                    //points set is myPoints_24L and myPoints_7D
+                    double XWL_down = 0, XWR_down = Math.Round( 250738.12,0), XHR_top =Math.Round( 325282.2,0)+1000;
+                    myPoints_border_Up = CreateBorderPoints(XWL_down, XWR_down+1000, myPoints_24R);
+                    myPoints_border_Down = CreateBorderPoints(XWL_down, XWR_down+1000, myPoints_24R);//need modify
 
-                    }
+                    myPoints_border_Left = CreateBorderPoints(XWR_down - 1000,XHR_top, myPoints_14U);
+                    myPoints_border_Right = CreateBorderPoints(XWR_down - 1000,XHR_top, myPoints_14U);//need modify
+                }
                     else
                     {
+                    //0,19890.62，0        250738.12,29670.839,2462.44   325282.2.,137255.18，0
+                    //Left and down direction
+                    //points set is myPoints_24L and myPoints_7D
+                    double XWL_down = 0, XWR_down = Math.Round(250738.12, 0), XHR_top = Math.Round(325282.2, 0) + 1000;
+                    myPoints_border_Up = CreateBorderPoints(XWL_down, XWR_down + 1000, myPoints_24R);
+                    myPoints_border_Down = CreateBorderPoints(XWL_down, XWR_down + 1000, myPoints_24R);//need modify
 
-                    }
+                    myPoints_border_Left = CreateBorderPoints(XWL_down - 1000, XHR_top, myPoints_14U);
+                    myPoints_border_Right = CreateBorderPoints(XWL_down - 1000, XHR_top, myPoints_14U);//need modify
+                }
             }
             else
             {
                     if (Top_Down_flag)
                     {
-                        //double  XWL_down=0, XWR_down= 251000,  XHR_top = 326000;//Need modify
-                        //double XWL_down = 348954, XWR_down = 417000,  XHR_top = 380000;
+                    //0,19890.62，0        250738.12,29670.839,2462.44   325282.2.,137255.18，0
+                    //Right and Up direction
+                    //
+                    //points set is myPoints_24L and myPoints_7D
+                    //double  XWL_down=0, XWR_down= 251000,  XHR_top = 326000;//Need modify
+                    //double XWL_down = 348954, XWR_down = 417000,  XHR_top = 380000;
 
 
-                        //myPoints_border_Right = CreateBorderPoints(XWR_down, XHR_top, myPoints_14U);
-                        //myPoints_border_left = CreateBorderPoints(XWR_down, XHR_top, myPoints_14U);
-                        //myPoints_border_Right = CreateBorderPoints(XWL_down, XHR_top, myPoints_7D);//Right and up
-                        //myPoints_border_Left = CreateBorderPoints(XWL_down, XHR_top, myPoints_7D);
-                    }
-                    else
+                    //myPoints_border_Right = CreateBorderPoints(XWR_down, XHR_top, myPoints_14U);
+                    //myPoints_border_left = CreateBorderPoints(XWR_down, XHR_top, myPoints_14U);
+                    //myPoints_border_Right = CreateBorderPoints(XWL_down, XHR_top, myPoints_7D);//Right and up
+                    //myPoints_border_Left = CreateBorderPoints(XWL_down, XHR_top, myPoints_7D);
+                }
+                else
                     {
                     //304577.83,-76564.4        325727.9,-27670.59,   416000.,-18352.27
                     //Right and down direction
@@ -233,36 +253,79 @@ namespace HMGSeis
                     }
             }
             //
-            //create the points of border
+            //create the points objects of border
             //
             if (Left_Right_flag)
             {
-                //
-                //the left low's y is divided of left line.
-                //
-                double left_border = myPoints_border_Down[0].Y;
-                double right_border = myPoints_border_Right[myPoints_border_Right.Count - 1].Y;
-                double DeltaLengthofborder = (right_border - left_border) / (myPoints_border_Right.Count - 1);
-                for (int i = 0; i < myPoints_border_Left.Count; i++)
-                {
-                    double x = myPoints_border_Down[0].X;//Need modify
-                    double y = left_border + DeltaLengthofborder * i;
-                    double z = myPoints_border_Down[0].Z;
 
-                    myPoints_border_Left[i].X = x;
-                    myPoints_border_Left[i].Y = y;
-                    myPoints_border_Left[i].Z = z;
-                    string name = "";
+                if (Top_Down_flag)
+                {
+
                     //
-                    //createing new points of boundary
-                    // 
-                    ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
-                    myPoints_border_Left[i].Name = name;
-                    ret = mySapModel.PointObj.AddCartesian(x, y, z - 11651.0, ref name);
-                    ret = mySapModel.PointObj.AddCartesian(x, y, -19151, ref name);
-                    ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name);
-                    ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name);
+                    //the Left Column's of  Y is Divided of Left line.
+                    //
+                    double left_border = myPoints_border_Down[0].Y;
+                    double right_border = myPoints_border_Right[myPoints_border_Right.Count - 1].Y;
+                    double DeltaLengthofborder = (right_border - left_border) / (myPoints_border_Right.Count - 1);
+                    for (int i = 0; i < myPoints_border_Left.Count; i++)
+                    {
+                        double x = myPoints_border_Down[0].X;//Need modify
+                        double y = left_border + DeltaLengthofborder * i;
+                        double z = myPoints_border_Down[0].Z;
+
+                        myPoints_border_Left[i].X = x;
+                        myPoints_border_Left[i].Y = y;
+                        myPoints_border_Left[i].Z = z;
+                        string name = "";
+                        //
+                        //createing new points of boundary
+                        // 
+                        ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
+                        myPoints_border_Left[i].Name = name;
+                        ret = mySapModel.PointObj.AddCartesian(x, y, z - 11651.0, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -19151, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name);
+                    }
+
+                    //
+                    //Right and Top direction.Create myPoints_border_Up
+                    //
+                    left_border = myPoints_border_Down[0].X;
+                    right_border = myPoints_border_Right[myPoints_border_Right.Count - 1].X;//Need modify
+                    DeltaLengthofborder = (right_border - left_border) / (myPoints_border_Down.Count - 1);
+                    for (int i = 1; i < myPoints_border_Down.Count; i++)
+                    {
+                        double x = myPoints_border_Down[0].X + DeltaLengthofborder * i;
+                        double y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y;//Need modify
+                        double z = myPoints_border_Down[myPoints_border_Down.Count - 1].Z;//Need modify
+                        string name = "";
+                        myPoints_border_Up[i].X = x;
+                        myPoints_border_Up[i].Y = y;
+                        myPoints_border_Up[i].Z = z;
+                        //
+                        //createing new points of boundary
+                        // 
+                        ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
+                        myPoints_border_Up[i].Name = name;
+                        ret = mySapModel.PointObj.AddCartesian(x, y, z - 11651.0, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -19151, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name);
+
+                    }
+
+
                 }
+                else
+
+                {
+
+
+
+
+                }
+                
             }
             else
             {
