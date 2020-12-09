@@ -154,6 +154,18 @@ namespace HMGSeis
             switch (switch_on)
             {
                 case '1': {
+
+                        Console.WriteLine("Get Information from  solid Object of Group....");
+                        //eItemType itemtype = eItemType.SelectedObjects;
+                        // ret = mySapModel.SelectObj.PropertyArea("None");
+                        //
+                        //get information from  group name "GPtSet_24R" 
+                        //
+                        string SelectedSolidSetName = "GSDSet_UP";
+                        Console.WriteLine("Get Points information from Group:{SelectedSolidSetName}");
+                        List<ZkPoints> myPoints_Solid = new List<ZkPoints>();
+                        myPoints_Solid = GetPointfromGroup(mySapModel, SelectedSolidSetName);
+
                         goto EndSap2000;
 
                          }
@@ -950,6 +962,63 @@ Madesolid:
             }
             myPoints.Sort(new ComparePoints_X());
            // PrintList(myPoints);
+            return myPoints;
+        }
+
+        /// <summary>
+        /// Get Point information from Group
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="ret"></param>
+        /// <param name="mySapModel"></param>
+        /// <param name="SelectedPointName"></param>
+        private static List<ZkPoints> GetSolidfromGroup(cSapModel mySapModel, string SelectedPointName)
+        {
+            int NumberSelected_Object = 0;
+            int[] ObjectType = new int[60];
+            string[] ObjectName = new string[60];
+            List<ZkPoints> myPoints = new List<ZkPoints>();
+
+            int ret;
+
+            ret = mySapModel.SelectObj.ClearSelection();
+            ret = mySapModel.SelectObj.Group(SelectedPointName);
+            ret = mySapModel.SelectObj.GetSelected(ref NumberSelected_Object, ref ObjectType, ref ObjectName);
+            for (int i = 0; i < NumberSelected_Object; i++)
+            {
+            switch (ObjectType[i]) {
+                case 1: {
+                            double x = 0; double y = 0; double z = 0;
+                            ret = mySapModel.PointObj.GetCoordCartesian(ObjectName[i], ref x, ref y, ref z);
+                            ZkPoints tempPt = new ZkPoints(i, ObjectName[i], x, y, z);//create a new instance
+                            myPoints.Add(tempPt);
+                            // Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName_Points[i], x, y, z);
+                            break;
+                    }
+                    case 5:
+                        {
+                            double x = 0; double y = 0; double z = 0;
+                            ret = mySapModel.SolidObj.GetPoints(string Name,ref ObjectName[i]);
+                            ZkPoints tempPt = new ZkPoints(i, ObjectName[i], x, y, z);//create a new instance
+                            myPoints.Add(tempPt);
+                            // Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName_Points[i], x, y, z);
+                            break;
+                        }
+                    case 6:
+                        {
+
+                            break;
+                        }
+                    default:
+                        {
+                            break;
+                        }
+                }
+
+            }
+
+            myPoints.Sort(new ComparePoints_X());
+            // PrintList(myPoints);
             return myPoints;
         }
 
