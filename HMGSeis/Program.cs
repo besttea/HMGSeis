@@ -605,7 +605,7 @@ namespace HMGSeis
                 uplayPointsList.Add(Point);
                 }
                 PointsListLU.Add(uplayPointsList);
-                ret = mySapModel.View.RefreshView(0, false);
+                //ret = mySapModel.View.RefreshView(0, false);
             #endregion
             #region Add point Matrix
             ///
