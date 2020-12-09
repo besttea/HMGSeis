@@ -433,9 +433,9 @@ namespace HMGSeis
                         double y = myPoints_border_Left[0].Y;
                         double z = myPoints_border_Up[i].Z;
                         string name = "";
-                        myPoints_border_Up[i].X = x;
-                        myPoints_border_Up[i].Y = y;
-                        myPoints_border_Up[i].Z = z;
+                        myPoints_border_Down[i].X = x;
+                        myPoints_border_Down[i].Y = y;
+                        myPoints_border_Down[i].Z = z;
                         //
                         //Createing New Points Object of boundary
                         // 
