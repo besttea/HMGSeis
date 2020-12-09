@@ -144,6 +144,32 @@ namespace HMGSeis
             //ret = mySapModel.File.NewBlank();
             //open a old model
             ret = mySapModel.File.OpenFile(ModelPath);
+            char switch_on='0';
+            Console.WriteLine("Please select function:\n" +
+                "1: \n" +
+                "2: \n" +
+                "0: Read the information and Made solid elements\n" +
+                "please enter a char: ");
+            switch_on=(char) Console.Read();
+            switch (switch_on)
+            {
+                case '1': {
+                        goto EndSap2000;
+
+                         }
+                case '2': {
+
+
+                        goto EndSap2000;
+                    }
+                default:
+                    {
+                        goto Madesolid;
+                        
+                    }
+            }
+            
+Madesolid:
             #region Get Information from Object of Group
             Console.WriteLine("Get Information from Object of Group....");
             //eItemType itemtype = eItemType.SelectedObjects;
@@ -665,7 +691,7 @@ namespace HMGSeis
                         tempSolid.Y = Y;
                         tempSolid.Z = Z;
                         SolidList.Add(tempSolid);
-                        ret = mySapModel.View.RefreshView(0, false);
+                        //ret = mySapModel.View.RefreshView(0, false);
                     ///
                         for (int m = 0; m < 8; m++)
                         {
@@ -729,49 +755,52 @@ namespace HMGSeis
 
 
                     Console.WriteLine("Write to AutoCAD.....End");
-                    #endregion
+                    
                     Console.WriteLine("Points Group:{0},Reading.....End!", SelectedPointName);
+                 }
+            #endregion
 
 
-                    ret = mySapModel.SelectObj.ClearSelection();
+       EndSap2000:
+            ret = mySapModel.SelectObj.ClearSelection();
 
-                    //switch to kN-m units
+            //switch to kN-m units
 
-                    ret = mySapModel.SetPresentUnits(eUnits.kN_m_C);
+            ret = mySapModel.SetPresentUnits(eUnits.kN_m_C);
 
-                    /////////////////////////////////////////
+            /////////////////////////////////////////
 
-                    #region RunAnalysis
-                    //
-                    ///////////////////////////////////////
-
-
-                    //save model
-
-                    // ret = mySapModel.File.Save(ModelPath);
+            #region RunAnalysis
+            //
+            ///////////////////////////////////////
 
 
+            //save model
 
-                    //run model (this will create the analysis model)
-
-                    //ret = mySapModel.Analyze.RunAnalysis();
-
-                    #endregion
-
-                    #region SAP2000 results
-                    //close sap2000
-                    ret = mySapObject.ApplicationExit(true);
+            // ret = mySapModel.File.Save(ModelPath);
 
 
 
+            //run model (this will create the analysis model)
 
-                    //fill SAP2000 result strings
+            //ret = mySapModel.Analyze.RunAnalysis();
+
+            #endregion
+
+            #region SAP2000 results
+            //close sap2000
+
+            ret = mySapObject.ApplicationExit(true);
 
 
-                    Console.ReadKey();
-                    #endregion
 
-                }           
+
+            //fill SAP2000 result strings
+
+
+            Console.ReadKey();
+            #endregion
+
         }
         private static List<ZkPoints> CreateBorderPoints(double border_Low, 
                                                         double border_Up, 
