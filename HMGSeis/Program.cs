@@ -161,7 +161,7 @@ namespace HMGSeis
                         //
                         //get information from  group name "GPtSet_24R" 
                         //
-                        string SelectedSolidSetName = "GSDSet_Right_Down";
+                        string SelectedSolidSetName = "GSDSet_LR1";
                         Console.WriteLine("Get Points information from Group:{SelectedSolidSetName}");
                         List<Solid> myPoints_Solid = new List<Solid>();
                         myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSolidSetName);
@@ -997,7 +997,7 @@ namespace HMGSeis
                             GetPointsFromSolid(mySapModel, ref tempSd, direction);//create points from the suface of solid
                             CreateSolidfromPoints(mySapModel,ref tempSd);
                                 mySolid.Add(tempSd);
-                            Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName[i], PointsName);
+                            //Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName[i], PointsName);
                             break;
                         }
                     default:
@@ -1038,16 +1038,37 @@ namespace HMGSeis
  
         private static void CreateSolidfromPoints(cSapModel mySapModel,ref Solid mySolid)
         {
-            int ret; 
-            for (int i = 4; i < 8; i++)
+            int ret;
+            if (mySolid.Z[0] > mySolid.Z[4])
             {
-                mySolid.X[i - 4]= mySolid.X[i];
-                mySolid.Y[i - 4] = mySolid.Y[i];
-                mySolid.Z[i - 4] = mySolid.Z[i];
-                mySolid.Z[i] = mySolid.Z[i] - 10000;
-                
-                ret = mySapModel.PointObj.AddCartesian(mySolid.X[i], mySolid.Y[i], mySolid.Z[i], ref mySolid.Elements[i]);
+                for (int i = 4; i < 8; i++)
+                {
+
+                    mySolid.X[i - 4] = mySolid.X[i];
+                    mySolid.Y[i - 4] = mySolid.Y[i];
+                    mySolid.Z[i - 4] = mySolid.Z[i];
+                  //mySolid.Z[i] = mySolid.Z[i] - 10000;
+                    mySolid.Z[i] = mySolid.Z[i] - 9280;
+
+                    ret = mySapModel.PointObj.AddCartesian(mySolid.X[i], mySolid.Y[i], mySolid.Z[i], ref mySolid.Elements[i]);
+                }
             }
+            else
+            {
+                for (int i = 4; i < 8; i++)
+                {
+
+                    mySolid.X[i] =  mySolid.X[i-4];
+                    mySolid.Y[i] =  mySolid.Y[i-4];
+                    mySolid.Z[i] =  mySolid.Z[i-4];
+                  //mySolid.Z[i] = mySolid.Z[i] - 10000;
+                    mySolid.Z[i] = mySolid.Z[i] - 9280;
+
+                    ret = mySapModel.PointObj.AddCartesian(mySolid.X[i], mySolid.Y[i], mySolid.Z[i], ref mySolid.Elements[i]);
+                }
+
+            }
+
 
             string BoxName = "";
             double[] x=new double[8], y = new double[8], z = new double[8];
