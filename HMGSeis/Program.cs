@@ -144,13 +144,13 @@ namespace HMGSeis
             //ret = mySapModel.File.NewBlank();
             //open a old model
             ret = mySapModel.File.OpenFile(ModelPath);
-            char switch_on='0';
+            char switch_on = '0';
             Console.WriteLine("Please select function:\n" +
-                "1: \n" +
-                "2: \n" +
+                "1: Get Information from  Solid Object of Group \n" +
+                "2: Get Information from  Area Object of Group\n" +
                 "0: Read the information and Made solid elements\n" +
                 "please enter a char: ");
-            switch_on=(char) Console.Read();
+            switch_on = (char)Console.Read();
             switch (switch_on)
             {
                 case '1': {
@@ -161,14 +161,15 @@ namespace HMGSeis
                         //
                         //get information from  group name "GPtSet_24R" 
                         //
-                        string SelectedSolidSetName = "GSDSet_UP";
+                        string SelectedSolidSetName = "GSDSet_Right_Down";
                         Console.WriteLine("Get Points information from Group:{SelectedSolidSetName}");
-                        List<ZkPoints> myPoints_Solid = new List<ZkPoints>();
-                        myPoints_Solid = GetPointfromGroup(mySapModel, SelectedSolidSetName);
+                        List<Solid> myPoints_Solid = new List<Solid>();
+                        myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSolidSetName);
+
 
                         goto EndSap2000;
 
-                         }
+                    }
                 case '2': {
 
 
@@ -176,12 +177,12 @@ namespace HMGSeis
                     }
                 default:
                     {
-                        goto Madesolid;
-                        
+                        goto CreateSolid;
+
                     }
             }
-            
-Madesolid:
+
+            CreateSolid:
             #region Get Information from Object of Group
             Console.WriteLine("Get Information from Object of Group....");
             //eItemType itemtype = eItemType.SelectedObjects;
@@ -499,58 +500,58 @@ Madesolid:
             {
                 if (Top_Down_flag)
                 {
-                    myPoints_Hor = CreateBorderPoints(0, 250738+1000, myPoints_24R);
+                    myPoints_Hor = CreateBorderPoints(0, 250738 + 1000, myPoints_24R);
                 }
                 else
                 {
-                    myPoints_Hor = CreateBorderPoints(0, 210322+1000, myPoints_24L);
+                    myPoints_Hor = CreateBorderPoints(0, 210322 + 1000, myPoints_24L);
                 }
-                 }
+            }
             else
             {
                 if (Top_Down_flag)
                 {
-                    myPoints_Hor = CreateBorderPoints(348954-1000, 416000+1000, myPoints_24R);
+                    myPoints_Hor = CreateBorderPoints(348954 - 1000, 416000 + 1000, myPoints_24R);
                 }
                 else
                 {
-                    myPoints_Hor = CreateBorderPoints(325727-1000, 416000+1000, myPoints_24L);
+                    myPoints_Hor = CreateBorderPoints(325727 - 1000, 416000 + 1000, myPoints_24L);
                 }
-                 }
-  
+            }
+
             //Need modify
-                //Console.WriteLine("myPoints_Hor:");
-                //PrintList(myPoints_Hor);
+            //Console.WriteLine("myPoints_Hor:");
+            //PrintList(myPoints_Hor);
+            //
+            //
+            //
+            List<List<ZkPoints>> PointsListLU = new List<List<ZkPoints>>();
+            //
+            for (int j = 0; j < myPoints_border_Right.Count; j++)
+            {
+                double left_border = myPoints_border_Left[j].X;
+                double right_border = myPoints_border_Right[j].X;
+                double DeltaLength = (right_border - left_border) / (myPoints_border_Up.Count - 1);
                 //
+                //Add the down direction first line of points
                 //
-                //
-                List<List<ZkPoints>> PointsListLU = new List<List<ZkPoints>>();
-                //
-                for (int j = 0; j < myPoints_border_Right.Count; j++)
+                List<ZkPoints> layPointsList = new List<ZkPoints>();
+                int lindex; string lname; double lx; double ly; double lz;
+                if (j == 0)
                 {
-                    double left_border = myPoints_border_Left[j].X;
-                    double right_border = myPoints_border_Right[j].X;
-                    double DeltaLength = (right_border - left_border) / (myPoints_border_Up.Count - 1);
-                    //
-                    //Add the down direction first line of points
-                    //
-                    List<ZkPoints> layPointsList = new List<ZkPoints>();
-                    int lindex; string lname; double lx; double ly; double lz;
-                    if (j == 0)
+                    List<ZkPoints> downlayPointsList = new List<ZkPoints>();
+                    for (int i = 0; i < myPoints_border_Down.Count; i++)
                     {
-                        List<ZkPoints> downlayPointsList = new List<ZkPoints>();
-                        for (int i = 0; i < myPoints_border_Down.Count; i++)
-                        {
-                            ZkPoints Point = new ZkPoints(lindex = (myPoints_border_Left.Count - 1) * myPoints_border_Down.Count + i,
-                                                 lname = myPoints_border_Down[i].Name,
-                                                 lx = myPoints_border_Down[i].X,
-                                                 ly = myPoints_border_Down[i].Y,
-                                                 lz = myPoints_border_Down[i].Z);
-                            downlayPointsList.Add(Point);
-                        }
-                        PointsListLU.Add(downlayPointsList);
-                        continue;
+                        ZkPoints Point = new ZkPoints(lindex = (myPoints_border_Left.Count - 1) * myPoints_border_Down.Count + i,
+                                             lname = myPoints_border_Down[i].Name,
+                                             lx = myPoints_border_Down[i].X,
+                                             ly = myPoints_border_Down[i].Y,
+                                             lz = myPoints_border_Down[i].Z);
+                        downlayPointsList.Add(Point);
                     }
+                    PointsListLU.Add(downlayPointsList);
+                    continue;
+                }
                 //
                 //Add Points Set of The Left Column
                 //
@@ -561,53 +562,53 @@ Madesolid:
                 //lz = myPoints_border_Left[j].Z;
                 lz = myPoints_border_Down[0].Z;//change this varibles that would lead to mismatch the vetex of block with the border vetex!!!
                 ZkPoints Firstpoints = new ZkPoints(lindex, lname, lx, ly, lz);
-                    //
-                    //the first and the last data of myPoints_Hor is error
-                    //
-                    layPointsList.Add(Firstpoints);
+                //
+                //the first and the last data of myPoints_Hor is error
+                //
+                layPointsList.Add(Firstpoints);
 
-                    for (int i = 1; i < myPoints_border_Up.Count; i++)
-                    {//create point coordinate of layer 0
-                     //
-                     //Lv:Xup,Y3,Xd,Yd;
-                     //
-                        double Xup = myPoints_border_Up[i].X;
-                        double Y3 = myPoints_border_Up[i].Y;
-                        double Xd = myPoints_border_Down[i].X;
-                        double Yd = myPoints_border_Down[i].Y;
-                        double Kv = K(Xup, Y3, Xd, Yd), dv = D(Xup, Y3, Xd, Yd);
-                        //
-                        //Lu:X0,Y4,Xr,Yr
-                        //
+                for (int i = 1; i < myPoints_border_Up.Count; i++)
+                {//create point coordinate of layer 0
+                 //
+                 //Lv:Xup,Y3,Xd,Yd;
+                 //
+                    double Xup = myPoints_border_Up[i].X;
+                    double Y3 = myPoints_border_Up[i].Y;
+                    double Xd = myPoints_border_Down[i].X;
+                    double Yd = myPoints_border_Down[i].Y;
+                    double Kv = K(Xup, Y3, Xd, Yd), dv = D(Xup, Y3, Xd, Yd);
+                    //
+                    //Lu:X0,Y4,Xr,Yr
+                    //
 
                     //    double X0 = myPoints_border_Down[0].X;
-                        double X0 = myPoints_border_Left[j].X;
-                        double Y4 = myPoints_border_Left[j].Y;
-                        double Xr = myPoints_border_Right[j].X;
-                        double Yr = myPoints_border_Right[j].Y;
-                        double Ku = K(X0, Y4, Xr, Yr), du = D(X0, Y4, Xr, Yr);
-                    
-                        double x = (du - dv) / (Kv - Ku);
-                        double y = Kv * (du - dv) / (Kv - Ku) + dv; //interaction of Lu and Lv
+                    double X0 = myPoints_border_Left[j].X;
+                    double Y4 = myPoints_border_Left[j].Y;
+                    double Xr = myPoints_border_Right[j].X;
+                    double Yr = myPoints_border_Right[j].Y;
+                    double Ku = K(X0, Y4, Xr, Yr), du = D(X0, Y4, Xr, Yr);
 
-                        double z = myPoints_border_Down[i].Z;
-                        if (Math.Abs(Kv) < 1e-6) x = Xd; y = Ku * x + du;
+                    double x = (du - dv) / (Kv - Ku);
+                    double y = Kv * (du - dv) / (Kv - Ku) + dv; //interaction of Lu and Lv
 
-                        myPoints_Hor[i].X = x;
-                        myPoints_Hor[i].Y = y;
-                        myPoints_Hor[i].Z = z;
-                        ///
-                        ///
-                        ///
-                        string name = ""; 
-                        ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
-                        myPoints_Hor[i].Name = name;
-                        ret = mySapModel.PointObj.AddCartesian(x, y, z - 11651.0, ref name);
-                        ret = mySapModel.PointObj.AddCartesian(x, y, -19151, ref name);
-                        ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name);
-                        ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name);
-                        ///
-                        myPoints_Hor[i].Name = name;
+                    double z = myPoints_border_Down[i].Z;
+                    if (Math.Abs(Kv) < 1e-6) x = Xd; y = Ku * x + du;
+
+                    myPoints_Hor[i].X = x;
+                    myPoints_Hor[i].Y = y;
+                    myPoints_Hor[i].Z = z;
+                    ///
+                    ///
+                    ///
+                    string name = "";
+                    ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
+                    myPoints_Hor[i].Name = name;
+                    ret = mySapModel.PointObj.AddCartesian(x, y, z - 11651.0, ref name);
+                    ret = mySapModel.PointObj.AddCartesian(x, y, -19151, ref name);
+                    ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name);
+                    ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name);
+                    ///
+                    myPoints_Hor[i].Name = name;
                     //
                     lindex = i + j * myPoints_border_Down.Count;
                     lname = name;
@@ -615,35 +616,35 @@ Madesolid:
                     ly = y;
                     lz = z;
                     ZkPoints Point = new ZkPoints(lindex, lname, lx, ly, lz);
-                        layPointsList.Add(Point);
-                    }
-
-                    lindex = myPoints_Hor[myPoints_Hor.Count - 1].Index;
-                    lname =myPoints_Hor[myPoints_Hor.Count - 1].Name;
-                    lx = myPoints_Hor[myPoints_Hor.Count - 1].X;
-                    ly = myPoints_Hor[myPoints_Hor.Count - 1].Y;
-                    lz= myPoints_Hor[myPoints_Hor.Count - 1].Z;
-                    ZkPoints Endpoints = new ZkPoints(lindex ,lname ,lx ,ly,lz );
-                    layPointsList.Add(Endpoints);
-
-                    PointsListLU.Add(layPointsList);
+                    layPointsList.Add(Point);
                 }
 
-                //Up line
-                //add Up line of point
-                List<ZkPoints> uplayPointsList = new List<ZkPoints>();
-                for (int i = 0; i < myPoints_border_Up.Count; i++)
-                {
-                int lindex= lindex = (myPoints_border_Left.Count - 1) * myPoints_border_Down.Count + i;
+                lindex = myPoints_Hor[myPoints_Hor.Count - 1].Index;
+                lname = myPoints_Hor[myPoints_Hor.Count - 1].Name;
+                lx = myPoints_Hor[myPoints_Hor.Count - 1].X;
+                ly = myPoints_Hor[myPoints_Hor.Count - 1].Y;
+                lz = myPoints_Hor[myPoints_Hor.Count - 1].Z;
+                ZkPoints Endpoints = new ZkPoints(lindex, lname, lx, ly, lz);
+                layPointsList.Add(Endpoints);
+
+                PointsListLU.Add(layPointsList);
+            }
+
+            //Up line
+            //add Up line of point
+            List<ZkPoints> uplayPointsList = new List<ZkPoints>();
+            for (int i = 0; i < myPoints_border_Up.Count; i++)
+            {
+                int lindex = lindex = (myPoints_border_Left.Count - 1) * myPoints_border_Down.Count + i;
                 string lname = myPoints_border_Up[i].Name;
                 double lx = myPoints_border_Up[i].X;
                 double ly = myPoints_border_Up[i].Y;
-                double lz= myPoints_border_Up[i].Z;
-                ZkPoints Point = new ZkPoints(lindex,lname ,lx,ly,lz) ;
+                double lz = myPoints_border_Up[i].Z;
+                ZkPoints Point = new ZkPoints(lindex, lname, lx, ly, lz);
                 uplayPointsList.Add(Point);
-                }
-                PointsListLU.Add(uplayPointsList);
-                //ret = mySapModel.View.RefreshView(0, false);
+            }
+            PointsListLU.Add(uplayPointsList);
+            //ret = mySapModel.View.RefreshView(0, false);
             #endregion
             #region Add point Matrix
             ///
@@ -651,129 +652,129 @@ Madesolid:
             ///
             List<List<Solid>> SolidMatrix = new List<List<Solid>>();
 
-                for (int j = 0; j < myPoints_border_Left.Count - 1; j++)
+            for (int j = 0; j < myPoints_border_Left.Count - 1; j++)
+            {
+
+                List<Solid> SolidList = new List<Solid>();
+                for (int i = 0; i < myPoints_border_Down.Count - 1; i++)
                 {
-
-                    List<Solid> SolidList = new List<Solid>();
-                    for (int i = 0; i < myPoints_border_Down.Count - 1; i++)
+                    Solid tempSolid = new Solid();
+                    double[] X = new double[8];
+                    double[] Y = new double[8];
+                    double[] Z = new double[8];
+                    string[] Name = new string[8];
+                    string BoxName = "";
+                    //
+                    //Lay Up
+                    //
+                    for (int k = 0; k < 2; k++)
                     {
-                        Solid tempSolid = new Solid();
-                        double[] X = new double[8];
-                        double[] Y = new double[8];
-                        double[] Z = new double[8];
-                        string[] Name = new string[8];
-                        string BoxName = "";
-                        //
-                        //Lay Up
-                        //
-                        for (int k = 0; k < 2; k++)
-                        {
-                            X[k] = PointsListLU[k + j][i].X;
-                            Y[k] = PointsListLU[k + j][i].Y;
-                            Z[k] = PointsListLU[k + j][i].Z;
-                        }
-                        for (int k = 2; k < 4; k++)
-                        {
-                            X[k] = PointsListLU[k - 2 + j][i + 1].X;
-                            Y[k] = PointsListLU[k - 2 + j][i + 1].Y;
-                            Z[k] = PointsListLU[k - 2 + j][i + 1].Z;
-                        }
-                        //
-                        //
-                        //
-                        for (int k = 4; k < 6; k++)
-                        {
-                            X[k] = PointsListLU[k - 4 + j][i].X;
-                            Y[k] = PointsListLU[k - 4 + j][i].Y;
-                            Z[k] = PointsListLU[k - 4 + j][i].Z - 11651;
-                        }
-                        for (int k = 6; k < 8; k++)
-                        {
-                            X[k] = PointsListLU[k - 6 + j][i + 1].X;
-                            Y[k] = PointsListLU[k - 6 + j][i + 1].Y;
-                            Z[k] = PointsListLU[k - 6 + j][i + 1].Z - 11651;
-                        }
+                        X[k] = PointsListLU[k + j][i].X;
+                        Y[k] = PointsListLU[k + j][i].Y;
+                        Z[k] = PointsListLU[k + j][i].Z;
+                    }
+                    for (int k = 2; k < 4; k++)
+                    {
+                        X[k] = PointsListLU[k - 2 + j][i + 1].X;
+                        Y[k] = PointsListLU[k - 2 + j][i + 1].Y;
+                        Z[k] = PointsListLU[k - 2 + j][i + 1].Z;
+                    }
+                    //
+                    //
+                    //
+                    for (int k = 4; k < 6; k++)
+                    {
+                        X[k] = PointsListLU[k - 4 + j][i].X;
+                        Y[k] = PointsListLU[k - 4 + j][i].Y;
+                        Z[k] = PointsListLU[k - 4 + j][i].Z - 11651;
+                    }
+                    for (int k = 6; k < 8; k++)
+                    {
+                        X[k] = PointsListLU[k - 6 + j][i + 1].X;
+                        Y[k] = PointsListLU[k - 6 + j][i + 1].Y;
+                        Z[k] = PointsListLU[k - 6 + j][i + 1].Z - 11651;
+                    }
 
-                        ret = mySapModel.SolidObj.AddByCoord(ref X,
-                                                             ref Y,
-                                                             ref Z,
-                                                             ref BoxName);
-                        tempSolid.Name = BoxName;
-                        tempSolid.X = X;
-                        tempSolid.Y = Y;
-                        tempSolid.Z = Z;
-                        SolidList.Add(tempSolid);
-                        //ret = mySapModel.View.RefreshView(0, false);
+                    ret = mySapModel.SolidObj.AddByCoord(ref X,
+                                                         ref Y,
+                                                         ref Z,
+                                                         ref BoxName);
+                    tempSolid.Name = BoxName;
+                    tempSolid.X = X;
+                    tempSolid.Y = Y;
+                    tempSolid.Z = Z;
+                    SolidList.Add(tempSolid);
+                    //ret = mySapModel.View.RefreshView(0, false);
                     ///
-                        for (int m = 0; m < 8; m++)
-                        {
-                            if (m < 4) Z[m] = Z[m] - 11651;
-                            else Z[m] = -19151;
-
-                        }
-                        ret = mySapModel.SolidObj.AddByCoord(ref X,
-                                                             ref Y,
-                                                             ref Z,
-                                                             ref BoxName);
-                        for (int m = 0; m < 8; m++)
-                        {
-                            if (m < 4) Z[m] = -19151;
-                            else Z[m] = -27251;
-
-                        }
-                        ret = mySapModel.SolidObj.AddByCoord(ref X,
-                                                             ref Y,
-                                                             ref Z,
-                                                             ref BoxName);
-                        for (int m = 0; m < 8; m++)
-                        {
-                            if (m < 4) Z[m] = -27251;
-                            else Z[m] = -36531;
-
-                        }
-                        ret = mySapModel.SolidObj.AddByCoord(ref X,
-                                                             ref Y,
-                                                             ref Z,
-                                                             ref BoxName);
+                    for (int m = 0; m < 8; m++)
+                    {
+                        if (m < 4) Z[m] = Z[m] - 11651;
+                        else Z[m] = -19151;
 
                     }
-                    SolidMatrix.Add(SolidList);
+                    ret = mySapModel.SolidObj.AddByCoord(ref X,
+                                                         ref Y,
+                                                         ref Z,
+                                                         ref BoxName);
+                    for (int m = 0; m < 8; m++)
+                    {
+                        if (m < 4) Z[m] = -19151;
+                        else Z[m] = -27251;
+
+                    }
+                    ret = mySapModel.SolidObj.AddByCoord(ref X,
+                                                         ref Y,
+                                                         ref Z,
+                                                         ref BoxName);
+                    for (int m = 0; m < 8; m++)
+                    {
+                        if (m < 4) Z[m] = -27251;
+                        else Z[m] = -36531;
+
+                    }
+                    ret = mySapModel.SolidObj.AddByCoord(ref X,
+                                                         ref Y,
+                                                         ref Z,
+                                                         ref BoxName);
+
                 }
-                #endregion
-                ret = mySapModel.View.RefreshView(0, false);
-                ///
-                ///Write to CAD
-                ///
-                Console.WriteLine("Write to AutoCAD.....");
-                #region Write to AutoCAD
-                using (AutoCADConnector connector = new AutoCADConnector())
-                {
-                    Console.WriteLine(connector.Application.ActiveDocument.Name);
-                    AcadApplication CadApp = connector.Application;
-                    AcadDocument CadDoc = connector.Application.ActiveDocument;
-                    AcadDatabase db = CadDoc.Database;
-                    AcadModelSpace CadSpace = CadDoc.ModelSpace;
+                SolidMatrix.Add(SolidList);
+            }
+            #endregion
+            ret = mySapModel.View.RefreshView(0, false);
+            ///
+            ///Write to CAD
+            ///
+            Console.WriteLine("Write to AutoCAD.....");
+            #region Write to AutoCAD
+            using (AutoCADConnector connector = new AutoCADConnector())
+            {
+                Console.WriteLine(connector.Application.ActiveDocument.Name);
+                AcadApplication CadApp = connector.Application;
+                AcadDocument CadDoc = connector.Application.ActiveDocument;
+                AcadDatabase db = CadDoc.Database;
+                AcadModelSpace CadSpace = CadDoc.ModelSpace;
 
-                    CadApp.Visible = true;
-                    //      //    //使AutoCAD可见(d)在按钮的消息处理函数中加入：
+                CadApp.Visible = true;
+                //      //    //使AutoCAD可见(d)在按钮的消息处理函数中加入：
 
-                    ////      var face2 = CadSpace.Add3DFace(point1, point2, point3,Point4,point4);
-
-
-
-                    CadApp.Application.Update();
-                    //     //更新显示
+                ////      var face2 = CadSpace.Add3DFace(point1, point2, point3,Point4,point4);
 
 
 
-                    Console.WriteLine("Write to AutoCAD.....End");
-                    
-                    Console.WriteLine("Points Group:{0},Reading.....End!", SelectedPointName);
-                 }
+                CadApp.Application.Update();
+                //     //更新显示
+
+
+
+                Console.WriteLine("Write to AutoCAD.....End");
+
+                Console.WriteLine("Points Group:{0},Reading.....End!", SelectedPointName);
+            }
             #endregion
 
 
-       EndSap2000:
+            EndSap2000:
             ret = mySapModel.SelectObj.ClearSelection();
 
             //switch to kN-m units
@@ -814,17 +815,17 @@ Madesolid:
             #endregion
 
         }
-        private static List<ZkPoints> CreateBorderPoints(double border_Low, 
-                                                        double border_Up, 
+        private static List<ZkPoints> CreateBorderPoints(double border_Low,
+                                                        double border_Up,
                                                         List<ZkPoints> myPoints)
         {
-            
-            int  i ;i = 0;
-            List<ZkPoints> myPoints_border=new List<ZkPoints>();
-            
+
+            int i; i = 0;
+            List<ZkPoints> myPoints_border = new List<ZkPoints>();
+
             foreach (ZkPoints tempPoint in myPoints)
             {
-                if ( tempPoint.X >= border_Low && tempPoint.X <= border_Up)
+                if (tempPoint.X >= border_Low && tempPoint.X <= border_Up)
                 {
                     ZkPoints myPoint = new ZkPoints(i,
                                                     tempPoint.Name,
@@ -877,7 +878,7 @@ Madesolid:
 
             return x;
         }
-        private static double K(double x1,double y1,double x2,double y2)
+        private static double K(double x1, double y1, double x2, double y2)
         {
             if (Math.Abs(x2 - x1) < 1e-6)
             { return 0; }
@@ -885,22 +886,22 @@ Madesolid:
             { return (y2 - y1) / (x2 - x1); }
 
         }
-        private static double D(double x1,double y1,double x2,double y2)
+        private static double D(double x1, double y1, double x2, double y2)
         {
-            return y2-K(x1,y1,x2,y2)*x2;
+            return y2 - K(x1, y1, x2, y2) * x2;
         }
 
-        private static double interpolationXtoZ(double X,int m,int n,
-                                                List<ZkPoints> myPointsList_Up, 
-                                                List<ZkPoints> myPointsList_Left, 
-                                                List<ZkPoints> myPointsList_Right, 
+        private static double interpolationXtoZ(double X, int m, int n,
+                                                List<ZkPoints> myPointsList_Up,
+                                                List<ZkPoints> myPointsList_Left,
+                                                List<ZkPoints> myPointsList_Right,
                                                 List<ZkPoints> myPointsList_Low)
         {
-            double  Z=0;
+            double Z = 0;
             ZkPoints UpPoint = new ZkPoints();
             ZkPoints LowPoint = new ZkPoints();
 
-            double X1 =0,X0=0,Y1=0,Y0=0,Z1=0,Z0=0;
+            double X1 = 0, X0 = 0, Y1 = 0, Y0 = 0, Z1 = 0, Z0 = 0;
             if (X >= 0 && X <= 325282.2)
             {
                 //interpolate z1 from x1 and x3 to get z
@@ -925,7 +926,7 @@ Madesolid:
                 Y0 = myPointsList_Left[m].Y;
                 Y1 = myPointsList_Right[m].Y;
 
-                Z =Z0+ (Z1-Z0)*(X1 - X) / (X1 - X0);
+                Z = Z0 + (Z1 - Z0) * (X1 - X) / (X1 - X0);
 
             }
 
@@ -939,29 +940,29 @@ Madesolid:
         /// <param name="ret"></param>
         /// <param name="mySapModel"></param>
         /// <param name="SelectedPointName"></param>
-        private static List<ZkPoints> GetPointfromGroup( cSapModel mySapModel, string SelectedPointName)
+        private static List<ZkPoints> GetPointfromGroup(cSapModel mySapModel, string SelectedPointName)
         {
             int NumberSelected_Point = 0;
             int[] ObjectType_Point = new int[60];
             string[] ObjectName_Points = new string[60];
-            List<ZkPoints> myPoints  = new List<ZkPoints>();
-            
+            List<ZkPoints> myPoints = new List<ZkPoints>();
+
             int ret;
 
             ret = mySapModel.SelectObj.ClearSelection();
             ret = mySapModel.SelectObj.Group(SelectedPointName);
             ret = mySapModel.SelectObj.GetSelected(ref NumberSelected_Point, ref ObjectType_Point, ref ObjectName_Points);
-         
+
             for (int i = 0; i < NumberSelected_Point; i++)
             {
-                double x = 0;double y = 0;double z = 0;
+                double x = 0; double y = 0; double z = 0;
                 ret = mySapModel.PointObj.GetCoordCartesian(ObjectName_Points[i], ref x, ref y, ref z);
                 ZkPoints tempPt = new ZkPoints(i, ObjectName_Points[i], x, y, z);//create a new instance
                 myPoints.Add(tempPt);
-               // Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName_Points[i], x, y, z);
+                // Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName_Points[i], x, y, z);
             }
             myPoints.Sort(new ComparePoints_X());
-           // PrintList(myPoints);
+            // PrintList(myPoints);
             return myPoints;
         }
 
@@ -971,42 +972,32 @@ Madesolid:
         /// <param name="i"></param>
         /// <param name="ret"></param>
         /// <param name="mySapModel"></param>
-        /// <param name="SelectedPointName"></param>
-        private static List<ZkPoints> GetSolidfromGroup(cSapModel mySapModel, string SelectedPointName)
+        /// <param name="SelectedObjectName"></param>
+        private static List<Solid> GetObjectfromGroup(cSapModel mySapModel, string SelectedObjectName)
         {
             int NumberSelected_Object = 0;
             int[] ObjectType = new int[60];
             string[] ObjectName = new string[60];
-            List<ZkPoints> myPoints = new List<ZkPoints>();
 
+            List<Solid> mySolid = new List<Solid>();
             int ret;
-
             ret = mySapModel.SelectObj.ClearSelection();
-            ret = mySapModel.SelectObj.Group(SelectedPointName);
+            ret = mySapModel.SelectObj.Group(SelectedObjectName);
             ret = mySapModel.SelectObj.GetSelected(ref NumberSelected_Object, ref ObjectType, ref ObjectName);
             for (int i = 0; i < NumberSelected_Object; i++)
             {
-            switch (ObjectType[i]) {
-                case 1: {
-                            double x = 0; double y = 0; double z = 0;
-                            ret = mySapModel.PointObj.GetCoordCartesian(ObjectName[i], ref x, ref y, ref z);
-                            ZkPoints tempPt = new ZkPoints(i, ObjectName[i], x, y, z);//create a new instance
-                            myPoints.Add(tempPt);
-                            // Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName_Points[i], x, y, z);
-                            break;
-                    }
-                    case 5:
-                        {
-                            double x = 0; double y = 0; double z = 0;
-                            ret = mySapModel.SolidObj.GetPoints(string Name,ref ObjectName[i]);
-                            ZkPoints tempPt = new ZkPoints(i, ObjectName[i], x, y, z);//create a new instance
-                            myPoints.Add(tempPt);
-                            // Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName_Points[i], x, y, z);
-                            break;
-                        }
+                switch (ObjectType[i]) {
                     case 6:
                         {
+                            string[] PointsName = new string[8];
 
+                            ret = mySapModel.SolidObj.GetPoints(ObjectName[i], ref PointsName);
+                            Solid tempSd = new Solid(i, ObjectName[i], PointsName);//create a new instance
+                            int direction = 1;
+                            GetPointsFromSolid(mySapModel, ref tempSd, direction);//create points from the suface of solid
+                            CreateSolidfromPoints(mySapModel,ref tempSd);
+                                mySolid.Add(tempSd);
+                            Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName[i], PointsName);
                             break;
                         }
                     default:
@@ -1016,12 +1007,58 @@ Madesolid:
                 }
 
             }
-
-            myPoints.Sort(new ComparePoints_X());
+            //myPoints.Sort(new ComparePoints_X());
             // PrintList(myPoints);
-            return myPoints;
+            return mySolid;
         }
 
+        private static void GetPointsFromSolid(cSapModel mySapModel,ref Solid Solid_Selected, int direction)
+        {
+            
+            for (int i = 0; i < Solid_Selected.Elements.Length; i++)
+            {
+                switch (direction)
+                {
+                    case 0:
+                    case 1:
+                        {
+                            double x = 0, y = 0, z = 0;int ret;
+                            ret = mySapModel.PointObj.GetCoordCartesian(Solid_Selected.Elements[i], ref x, ref y, ref z);
+                            Solid_Selected.X[i] = x;
+                            Solid_Selected.Y[i] = y;
+                            Solid_Selected.Z[i] = z;
+                             break;
+                        }
+                    default:
+                        break;
+                }
+
+            }
+        }
+ 
+        private static void CreateSolidfromPoints(cSapModel mySapModel,ref Solid mySolid)
+        {
+            int ret; 
+            for (int i = 4; i < 8; i++)
+            {
+                mySolid.X[i - 4]= mySolid.X[i];
+                mySolid.Y[i - 4] = mySolid.Y[i];
+                mySolid.Z[i - 4] = mySolid.Z[i];
+                mySolid.Z[i] = mySolid.Z[i] - 10000;
+                
+                ret = mySapModel.PointObj.AddCartesian(mySolid.X[i], mySolid.Y[i], mySolid.Z[i], ref mySolid.Elements[i]);
+            }
+
+            string BoxName = "";
+            double[] x=new double[8], y = new double[8], z = new double[8];
+            x = mySolid.X;y = mySolid.Y;z = mySolid.Z;
+
+            ret = mySapModel.SolidObj.AddByCoord(ref x,ref y, ref z, ref BoxName);
+
+            mySolid.Name = BoxName;
+
+
+        }
         private static void PrintList(List<ZkPoints> myPointsList)
         {
 
