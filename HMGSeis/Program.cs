@@ -144,34 +144,46 @@ namespace HMGSeis
             //ret = mySapModel.File.NewBlank();
             //open a old model
             ret = mySapModel.File.OpenFile(ModelPath);
-            char switch_on = '0';
+            char SelectObType = '0';
             Console.WriteLine("Please select function:\n" +
-                "1: Get Information from  Solid Object of Group \n" +
-                "2: Get Information from  Area Object of Group\n" +
+                "6: Get Information from  Solid Object of Group \n" +
+                "5: Get Information from  Area Object of Group\n" +
                 "0: Read the information and Made solid elements\n" +
                 "please enter a char: ");
-            switch_on = (char)Console.Read();
-            switch (switch_on)
+            SelectObType = (char)Console.Read();
+            double Hight = 10000;
+            int direction=1;
+            switch (SelectObType)
             {
-                case '1': {
+                case '6': {
 
                         Console.WriteLine("Get Information from  solid Object of Group....");
                         //eItemType itemtype = eItemType.SelectedObjects;
                         // ret = mySapModel.SelectObj.PropertyArea("None");
                         //
-                        //get information from  group name "GPtSet_24R" 
+                        //get information from  group name "1GR_t1" 
                         //
-                        string SelectedSolidSetName = "GSDSet_LR1";
+                        string SelectedSolidSetName = "1GR_t1";
                         Console.WriteLine("Get Points information from Group:{SelectedSolidSetName}");
                         List<Solid> myPoints_Solid = new List<Solid>();
-                        myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSolidSetName);
+                        myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSolidSetName, SelectObType,direction, Hight);
 
 
                         goto EndSap2000;
 
                     }
-                case '2': {
+                case '5': {
 
+                        Console.WriteLine("Get Information from  Surface Object of Group....");
+                        //eItemType itemtype = eItemType.SelectedObjects;
+                        // ret = mySapModel.SelectObj.PropertyArea("None");
+                        //
+                        //get information from  group name "GPtSet_24R" 
+                        //
+                        string SelectedSurfaceSetName = "GSFSet_LR1";
+                        Console.WriteLine("Get Points information from Group:{SelectedSurfaceSetName}");
+                        List<Solid> myPoints_Solid = new List<Solid>();
+                        myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSurfaceSetName, SelectObType, direction,Hight);
 
                         goto EndSap2000;
                     }
@@ -200,14 +212,14 @@ namespace HMGSeis
             //
             //get information from  group name "GPtSet_24L" 
             //
-            SelectedPointName = "GPtSet_24L";
+            SelectedPointName = "1GP_x";// "GPtSet_24L";
             Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
             List<ZkPoints> myPoints_24L = new List<ZkPoints>();
             myPoints_24L = GetPointfromGroup(mySapModel, SelectedPointName);
             //
             //get information from  group name "GPtSet_14U" 
             //
-            SelectedPointName = "GPtSet_14U";
+            SelectedPointName = "1GP_y";// "GPtSet_14U";
             Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
             List<ZkPoints> myPoints_14U = new List<ZkPoints>();
             myPoints_14U = GetPointfromGroup(mySapModel, SelectedPointName);
@@ -232,13 +244,14 @@ namespace HMGSeis
             //
             //
             //bool Left_Right_flag = true,Top_Down_flag=true;
-            bool Left_Right_flag = false, Top_Down_flag = false;
+            bool Left_Right_flag = true, Top_Down_flag = false;
             //Define the range of area
             if (Left_Right_flag)
             {
                 if (Top_Down_flag)
                 {
                     //0,19890.62，0        250738.12,29670.839,2462.44   325282.2.,137255.18，0
+ 
                     //Left and Up direction
                     //points set is myPoints_24L and myPoints_7D
                     double XWL_down = 0, XWR_down = Math.Round(250738.12, 0), XHR_top = Math.Round(325282.2, 0) + 1000;
@@ -251,14 +264,15 @@ namespace HMGSeis
                 else
                 {
                     //0,19890.62，0        250738.12,29670.839,2462.44   325282.2.,137255.18，0
+                    //0,-84606.3,0         170098.98,-83025.8,2249.4921,  205114.98,-107287.7,0//LR_OUT
                     //Left and down direction
                     //points set is myPoints_24L and myPoints_7D
-                    double XWL_down = 0, XWR_down = Math.Round(250738.12, 0), XHR_top = Math.Round(325282.2, 0) + 1000;
-                    myPoints_border_Up = CreateBorderPoints(XWL_down, XWR_down + 1000, myPoints_24R);
-                    myPoints_border_Down = CreateBorderPoints(XWL_down, XWR_down + 1000, myPoints_24R);//need modify
+                    double XWL_down = 0, XWR_down = Math.Round(170098.98, 0), XHR_top = Math.Round(205114.98, 0);
+                    myPoints_border_Up = CreateBorderPoints(XWL_down, XWR_down + 1000, myPoints_24L);
+                    myPoints_border_Down = CreateBorderPoints(XWL_down, XWR_down + 1000, myPoints_24L);//need modify
 
-                    myPoints_border_Left = CreateBorderPoints(XWL_down - 1000, XHR_top, myPoints_14U);
-                    myPoints_border_Right = CreateBorderPoints(XWL_down - 1000, XHR_top, myPoints_14U);//need modify
+                    myPoints_border_Left = CreateBorderPoints(XWL_down - 1000, XHR_top+1000, myPoints_14U);
+                    myPoints_border_Right = CreateBorderPoints(XWL_down - 1000, XHR_top+1000, myPoints_14U);//need modify
                 }
             }
             else
@@ -359,7 +373,60 @@ namespace HMGSeis
                 else
 
                 {
+                    //
+                    //the Left Column's of  Y is Divided of Left line.Create myPoints_border_Left
+                    //
+                    double left_border = myPoints_border_Up[0].Y;
+                    double right_border = myPoints_border_Right[myPoints_border_Right.Count - 1].Y;
+                    double DeltaLengthofborder = (right_border - left_border) / (myPoints_border_Right.Count - 1);
+                    for (int i = 0; i < myPoints_border_Left.Count; i++)
+                    {
+                        double x = myPoints_border_Up[0].X;//Need modify
+                        double y = left_border + DeltaLengthofborder * i;
+                        double z = myPoints_border_Down[0].Z;
 
+                        myPoints_border_Left[i].X = x;
+                        myPoints_border_Left[i].Y = y;
+                        myPoints_border_Left[i].Z = z;
+                        string name = "";
+                        //
+                        //createing new points of boundary
+                        // 
+                        ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
+                        myPoints_border_Left[i].Name = name;
+                        ret = mySapModel.PointObj.AddCartesian(x, y, z - 11651.0, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -19151, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name);
+                    }
+
+                    //
+                    //Right and Down direction.Create myPoints_border_Down
+                    //
+                    left_border = myPoints_border_Up[0].X;
+                    right_border = myPoints_border_Right[myPoints_border_Right.Count - 1].X;//Need modify
+                    DeltaLengthofborder = (right_border - left_border) / (myPoints_border_Down.Count - 1);
+                    //myPoints_border_Down[0].Y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y;//modify the first points
+                    for (int i = 0; i < myPoints_border_Up.Count; i++)
+                    {
+                        double x = myPoints_border_Up[0].X + DeltaLengthofborder * i;
+                        double y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y;//Need modify
+                        double z = myPoints_border_Up[i].Z;//Need modify
+                        string name = "";
+                        myPoints_border_Down[i].X = x;
+                        myPoints_border_Down[i].Y = y;
+                        myPoints_border_Down[i].Z = z;
+                        //
+                        //createing new points of boundary
+                        // 
+                        ret = mySapModel.PointObj.AddCartesian(x, y, z, ref name);
+                        myPoints_border_Down[i].Name = name;
+                        ret = mySapModel.PointObj.AddCartesian(x, y, z - 11651.0, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -19151, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name);
+                        ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name);
+
+                    }
 
 
 
@@ -369,7 +436,7 @@ namespace HMGSeis
             else
             {
                 //
-                //the Right low's y is divided of right line.
+                //the Right low's y is divided of right line.Creat  myPoints_border_Right
                 //
                 if (Top_Down_flag)
                 {
@@ -399,7 +466,7 @@ namespace HMGSeis
                 }
                 else
                 {   //
-                    //Right and Down direction.creating new points of boundary right line
+                    //Right and Down direction.creating new points of boundary right line,Create  myPoints_border_Right
                     //
                     double left_border = myPoints_border_Left[0].Y;
                     double right_border = myPoints_border_Up[myPoints_border_Up.Count - 1].Y;
@@ -504,7 +571,9 @@ namespace HMGSeis
                 }
                 else
                 {
-                    myPoints_Hor = CreateBorderPoints(0, 210322 + 1000, myPoints_24L);
+                    //0,-84606.3,0         170098.98,-83025.8,2249.4921,  205114.98,-107287.7,0//LR_OUT
+                    double XWL_down = 0, XWR_down = Math.Round(170098.98, 0), XHR_top = Math.Round(205114.98, 0);
+                    myPoints_Hor = CreateBorderPoints(0, XWR_down + 1000, myPoints_24L);
                 }
             }
             else
@@ -943,8 +1012,8 @@ namespace HMGSeis
         private static List<ZkPoints> GetPointfromGroup(cSapModel mySapModel, string SelectedPointName)
         {
             int NumberSelected_Point = 0;
-            int[] ObjectType_Point = new int[60];
-            string[] ObjectName_Points = new string[60];
+            int[] ObjectType_Point = new int[2800];
+            string[] ObjectName_Points = new string[2800];
             List<ZkPoints> myPoints = new List<ZkPoints>();
 
             int ret;
@@ -973,11 +1042,11 @@ namespace HMGSeis
         /// <param name="ret"></param>
         /// <param name="mySapModel"></param>
         /// <param name="SelectedObjectName"></param>
-        private static List<Solid> GetObjectfromGroup(cSapModel mySapModel, string SelectedObjectName)
+        private static List<Solid> GetObjectfromGroup(cSapModel mySapModel, string SelectedObjectName,char ObType,int direction,double Hight)
         {
             int NumberSelected_Object = 0;
-            int[] ObjectType = new int[60];
-            string[] ObjectName = new string[60];
+            int[] ObjectType = new int[2800];
+            string[] ObjectName = new string[2800];
 
             List<Solid> mySolid = new List<Solid>();
             int ret;
@@ -986,17 +1055,30 @@ namespace HMGSeis
             ret = mySapModel.SelectObj.GetSelected(ref NumberSelected_Object, ref ObjectType, ref ObjectName);
             for (int i = 0; i < NumberSelected_Object; i++)
             {
-                switch (ObjectType[i]) {
-                    case 6:
+                switch (ObType) {
+                    case '6':
                         {
                             string[] PointsName = new string[8];
 
                             ret = mySapModel.SolidObj.GetPoints(ObjectName[i], ref PointsName);
                             Solid tempSd = new Solid(i, ObjectName[i], PointsName);//create a new instance
-                            int direction = 1;
-                            GetPointsFromSolid(mySapModel, ref tempSd, direction);//create points from the suface of solid
-                            CreateSolidfromPoints(mySapModel,ref tempSd);
+                            
+                            GetPointsFromSolid(mySapModel, ref tempSd, direction, ObType);//create points from the suface of solid
+                            CreateSolidfromPoints(mySapModel,ref tempSd, direction, Hight); 
                                 mySolid.Add(tempSd);
+                            //Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName[i], PointsName);
+                            break;
+                        }
+                    case '5':
+                        {
+                            string[] PointsName = new string[8];
+                            int number=0;
+                            ret = mySapModel.AreaObj.GetPoints(ObjectName[i],ref number, ref PointsName);
+                            Solid tempSd = new Solid(i, ObjectName[i], PointsName);//create a new instance
+                            
+                            GetPointsFromSolid(mySapModel, ref tempSd, direction, ObType);//create points from the suface of solid
+                            CreateSolidfromPoints(mySapModel, ref tempSd, direction, Hight);
+                            mySolid.Add(tempSd);
                             //Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName[i], PointsName);
                             break;
                         }
@@ -1012,62 +1094,141 @@ namespace HMGSeis
             return mySolid;
         }
 
-        private static void GetPointsFromSolid(cSapModel mySapModel,ref Solid Solid_Selected, int direction)
+        private static void GetPointsFromSolid(cSapModel mySapModel,ref Solid Solid_Selected, int direction,char ObType)
         {
-            
-            for (int i = 0; i < Solid_Selected.Elements.Length; i++)
-            {
-                switch (direction)
+            int ret;
+
+            switch (ObType)
                 {
-                    case 0:
-                    case 1:
+                    case '5':
+                    {
+                        for (int i = 0; i < Solid_Selected.Elements.Length; i++)
                         {
-                            double x = 0, y = 0, z = 0;int ret;
+                            double x = 0, y = 0, z = 0;
+                            if (Solid_Selected.Elements[i] != "")
+                            {
+                                ret = mySapModel.PointObj.GetCoordCartesian(Solid_Selected.Elements[i], ref x, ref y, ref z);
+                                Solid_Selected.X[i] = x;
+                                Solid_Selected.Y[i] = y;
+                                Solid_Selected.Z[i] = z;
+                            }
+
+                        }
+                        break;
+                    }
+                    case '6':
+                        {
+                        
+                        for (int i = 0; i < Solid_Selected.Elements.Length; i++)
+                        {
+                            double x = 0, y = 0, z = 0;
                             ret = mySapModel.PointObj.GetCoordCartesian(Solid_Selected.Elements[i], ref x, ref y, ref z);
                             Solid_Selected.X[i] = x;
                             Solid_Selected.Y[i] = y;
                             Solid_Selected.Z[i] = z;
-                             break;
+                        }
+                        break;
                         }
                     default:
                         break;
                 }
 
-            }
+            
         }
  
-        private static void CreateSolidfromPoints(cSapModel mySapModel,ref Solid mySolid)
+        private static void CreateSolidfromPoints(cSapModel mySapModel,ref Solid mySolid,int direction,double Hight)
         {
             int ret;
-            if (mySolid.Z[0] > mySolid.Z[4])
+
+            switch (direction)
             {
-                for (int i = 4; i < 8; i++)
-                {
 
-                    mySolid.X[i - 4] = mySolid.X[i];
-                    mySolid.Y[i - 4] = mySolid.Y[i];
-                    mySolid.Z[i - 4] = mySolid.Z[i];
-                  //mySolid.Z[i] = mySolid.Z[i] - 10000;
-                    mySolid.Z[i] = mySolid.Z[i] - 9280;
+                case 0:
+                    {
+                        ///
+                        /// Up direction
+                        ///
+                        if (mySolid.Z[0] < mySolid.Z[4])//z is up
+                        {
+                            for (int i = 4; i < 8; i++)
+                            {
 
-                    ret = mySapModel.PointObj.AddCartesian(mySolid.X[i], mySolid.Y[i], mySolid.Z[i], ref mySolid.Elements[i]);
-                }
+                                mySolid.X[i - 4] = mySolid.X[i];
+                                mySolid.Y[i - 4] = mySolid.Y[i];
+                                mySolid.Z[i - 4] = mySolid.Z[i];
+                                //mySolid.Z[i] = mySolid.Z[i] - 10000;
+                                mySolid.Z[i] = mySolid.Z[i] + Hight;// 9280;
+
+                                ret = mySapModel.PointObj.AddCartesian(mySolid.X[i], mySolid.Y[i], mySolid.Z[i], ref mySolid.Elements[i]);
+                            }
+                        }
+                        else
+                        {
+                            ///
+                            /// Up direction
+                            ///
+                            for (int i = 4; i < 8; i++)//z is down 
+                            {
+
+                                mySolid.X[i] = mySolid.X[i-4];
+                                mySolid.Y[i] = mySolid.Y[i-4];
+                                mySolid.Z[i] = mySolid.Z[i-4];
+                                //mySolid.Z[i] = mySolid.Z[i] - 10000;
+                                mySolid.Z[i-4] = mySolid.Z[i-4] + Hight;// 9280;
+                            
+                                ret = mySapModel.PointObj.AddCartesian(mySolid.X[i], mySolid.Y[i], mySolid.Z[i], ref mySolid.Elements[i]);
+                            }
+
+                        }
+                        break;
+                    }
+
+                case 1:
+                    {
+                        ///
+                        /// down direction
+                        /// 
+                        if (mySolid.Z[0] < mySolid.Z[4])//normal order ,z is up directtion
+                        {
+                            for (int i = 4; i < 8; i++)
+                            {
+
+                                mySolid.X[i] = mySolid.X[i-4];
+                                mySolid.Y[i] = mySolid.Y[i-4];
+                                mySolid.Z[i] = mySolid.Z[i-4];
+                                //mySolid.Z[i] = mySolid.Z[i] - 10000;
+                                mySolid.Z[i-4] = mySolid.Z[i-4] - Hight;// 9280;
+
+                                ret = mySapModel.PointObj.AddCartesian(mySolid.X[i], mySolid.Y[i], mySolid.Z[i], ref mySolid.Elements[i]);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 4; i < 8; i++)////,z is Down directtion
+                            {
+
+                                mySolid.X[i-4] = mySolid.X[i];
+                                mySolid.Y[i-4] = mySolid.Y[i];
+                                mySolid.Z[i-4] = mySolid.Z[i];
+                                //mySolid.Z[i] = mySolid.Z[i] - 10000;
+                                mySolid.Z[i] = mySolid.Z[i] - Hight;// 9280;
+
+                                ret = mySapModel.PointObj.AddCartesian(mySolid.X[i], mySolid.Y[i], mySolid.Z[i], ref mySolid.Elements[i]);
+                            }
+
+                        }
+                        break;
+                    }
+
+                default:
+                    {
+
+                        break;
+                    }
+
             }
-            else
-            {
-                for (int i = 4; i < 8; i++)
-                {
 
-                    mySolid.X[i] =  mySolid.X[i-4];
-                    mySolid.Y[i] =  mySolid.Y[i-4];
-                    mySolid.Z[i] =  mySolid.Z[i-4];
-                  //mySolid.Z[i] = mySolid.Z[i] - 10000;
-                    mySolid.Z[i] = mySolid.Z[i] - 9280;
 
-                    ret = mySapModel.PointObj.AddCartesian(mySolid.X[i], mySolid.Y[i], mySolid.Z[i], ref mySolid.Elements[i]);
-                }
-
-            }
 
 
             string BoxName = "";
