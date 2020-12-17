@@ -153,6 +153,7 @@ namespace HMGSeis
             SelectObType = (char)Console.Read();
             double Hight = 10000;
             int direction=1;
+            bool flag_Y_reversed = true;//if array need to reversed, then you set this varible is true.
             switch (SelectObType)
             {
                 case '6': {
@@ -161,9 +162,9 @@ namespace HMGSeis
                         //eItemType itemtype = eItemType.SelectedObjects;
                         // ret = mySapModel.SelectObj.PropertyArea("None");
                         //
-                        //get information from  group name "1GR_t1" 
+                        //get information from  group name "1GP_temp_2" 
                         //
-                        string SelectedSolidSetName = "1GR_t1";
+                        string SelectedSolidSetName = "1GP_temp_2";
                         Console.WriteLine("Get Points information from Group:{SelectedSolidSetName}");
                         List<Solid> myPoints_Solid = new List<Solid>();
                         myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSolidSetName, SelectObType,direction, Hight);
@@ -223,7 +224,16 @@ namespace HMGSeis
             Console.WriteLine("Get point information from Group:{0}", SelectedPointName);
             List<ZkPoints> myPoints_14U = new List<ZkPoints>();
             myPoints_14U = GetPointfromGroup(mySapModel, SelectedPointName);
-            //
+            ///
+            ///Only for Right low direction is reverse!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            ///
+            if (flag_Y_reversed)
+            {
+                 myPoints_14U.Reverse();
+            }  
+            ///
+            ///
+            ///
             //get information from  group name "GPtSet_7D" 
             //
             SelectedPointName = "GPtSet_7D";
@@ -273,6 +283,7 @@ namespace HMGSeis
 
                     myPoints_border_Left = CreateBorderPoints(XWL_down - 1000, XHR_top+1000, myPoints_14U);
                     myPoints_border_Right = CreateBorderPoints(XWL_down - 1000, XHR_top+1000, myPoints_14U);//need modify
+
                 }
             }
             else
@@ -305,6 +316,7 @@ namespace HMGSeis
                     myPoints_border_Right = CreateBorderPoints(0, XWL_down + 1000, myPoints_7D);//need modify
                 }
             }
+
             //
             //create the points objects of border
             //
@@ -377,7 +389,12 @@ namespace HMGSeis
                     //the Left Column's of  Y is Divided of Left line.Create myPoints_border_Left
                     //
                     double left_border = myPoints_border_Up[0].Y;
+                    if (flag_Y_reversed)
+                    {
+                        left_border = myPoints_border_Right[0].Y;
+                    }
                     double right_border = myPoints_border_Right[myPoints_border_Right.Count - 1].Y;
+                   
                     double DeltaLengthofborder = (right_border - left_border) / (myPoints_border_Right.Count - 1);
                     for (int i = 0; i < myPoints_border_Left.Count; i++)
                     {
@@ -405,12 +422,20 @@ namespace HMGSeis
                     //
                     left_border = myPoints_border_Up[0].X;
                     right_border = myPoints_border_Right[myPoints_border_Right.Count - 1].X;//Need modify
+                    if (flag_Y_reversed)
+                    {
+                        right_border = myPoints_border_Right[0].X;
+                    }
                     DeltaLengthofborder = (right_border - left_border) / (myPoints_border_Down.Count - 1);
                     //myPoints_border_Down[0].Y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y;//modify the first points
                     for (int i = 0; i < myPoints_border_Up.Count; i++)
                     {
                         double x = myPoints_border_Up[0].X + DeltaLengthofborder * i;
                         double y = myPoints_border_Right[myPoints_border_Right.Count - 1].Y;//Need modify
+                        if (flag_Y_reversed)
+                        {
+                            y = myPoints_border_Right[0].Y;
+                        }
                         double z = myPoints_border_Up[i].Z;//Need modify
                         string name = "";
                         myPoints_border_Down[i].X = x;
@@ -502,6 +527,10 @@ namespace HMGSeis
                     //Right and Top direction.Create myPoints_border_Up
                     //
                     double left_border = myPoints_border_Left[myPoints_border_Left.Count - 1].X;
+                    if (flag_Y_reversed)
+                    {
+                        left_border = myPoints_border_Left[0].X;
+                    }
                     double right_border = myPoints_border_Down[myPoints_border_Down.Count - 1].X;//Need modify
                     double DeltaLengthofborder = (right_border - left_border) / (myPoints_border_Up.Count - 1);
                     for (int i = 1; i < myPoints_border_Up.Count; i++)
@@ -676,6 +705,7 @@ namespace HMGSeis
                     ret = mySapModel.PointObj.AddCartesian(x, y, -19151, ref name);
                     ret = mySapModel.PointObj.AddCartesian(x, y, -27251, ref name);
                     ret = mySapModel.PointObj.AddCartesian(x, y, -36531, ref name);
+
                     ///
                     myPoints_Hor[i].Name = name;
                     //
@@ -1031,6 +1061,7 @@ namespace HMGSeis
                 // Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName_Points[i], x, y, z);
             }
             myPoints.Sort(new ComparePoints_X());
+            
             // PrintList(myPoints);
             return myPoints;
         }
