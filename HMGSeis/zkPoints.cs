@@ -12,6 +12,9 @@ namespace HMGSeis
         private double x = 0;
         private double y = 0;
         private double z = 0;
+        private string coordSys = "GLOBAL";
+        private int connectNumber = 0;
+
         private int index = 0;
         private string name = "";
        public double[] Coordinate {
@@ -66,6 +69,10 @@ namespace HMGSeis
             get { return name; }
             set { name = value; }
                 }
+
+        public string CoordSys { get => coordSys; set => coordSys = value; }
+        public int ConnectNumber { get => connectNumber; set => connectNumber = value; }
+
         //void public zkPoints(void);
         public  ZkPoints()
      {
@@ -94,6 +101,12 @@ namespace HMGSeis
         public void Printme()
         {  
                 Console.WriteLine(@"{0},{1},{2},{3},{4}", this.Index, this.Name, this.X, this.Y, this.Z);
+        }
+        public void Get_Points_ConnectorNum(int _connectNumber)
+        {
+
+            connectNumber = _connectNumber;
+
         }
     }
 
