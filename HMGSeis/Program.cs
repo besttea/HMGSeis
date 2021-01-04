@@ -60,7 +60,7 @@ namespace HMGSeis
 
             }
 
-            string ModelName = "HUB20201230SDSeis_1.sdb";
+            string ModelName = "HUB20201230SDSeis_2.sdb";
 
             string ModelPath = ModelDirectory + System.IO.Path.DirectorySeparatorChar + ModelName;
             Console.WriteLine("ModelPath={0}", ModelPath);
@@ -152,8 +152,8 @@ namespace HMGSeis
                 "0: Read the information and Made solid elements\n" +
                 "please enter a char: ");
             SelectObType = (char)Console.Read();
-            double Hight = 0;
-            int direction=0;
+            double Hight = 10000;
+            int direction=2;
             bool flag_Y_reversed = true;//if array need to reversed, then you set this varible is true.
             switch (SelectObType)
             {
@@ -165,7 +165,7 @@ namespace HMGSeis
                         //
                         //get information from  group name "1test" 
                         //
-                        string SelectedSolidSetName = "1test";
+                        string SelectedSolidSetName = "1test1";
                         Console.WriteLine("Get Points information from Group:{SelectedSolidSetName}");
                         List<Solid> myPoints_Solid = new List<Solid>();
                         myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSolidSetName, SelectObType,direction, Hight);
@@ -182,7 +182,7 @@ namespace HMGSeis
                         //
                         //get information from  group name "GPtSet_24R" 
                         //
-                        string SelectedSurfaceSetName = "1Tttt";
+                        string SelectedSurfaceSetName = "1test1";
                         Console.WriteLine("Get Points information from Group:{SelectedSurfaceSetName}");
                         List<Solid> myPoints_Solid = new List<Solid>();
                         myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSurfaceSetName, SelectObType, direction,Hight);
@@ -1188,9 +1188,11 @@ namespace HMGSeis
                             string[] PointsName = new string[8];
 
                             ret = mySapModel.SolidObj.GetPoints(ObjectName[i], ref PointsName);
-                            Solid tempSd = new Solid(i, ObjectName[i], PointsName);//create a new instance
-
                             
+                            Solid tempSd = new Solid(i, ObjectName[i], PointsName);//create a new instance
+                            double a =0, b =0, c = 0; bool Advanced = false;
+                            ret = mySapModel.SolidObj.GetLocalAxes(ObjectName[i], ref a, ref b, ref c, ref Advanced);
+
                             GetPointsFromSolid(mySapModel, ref tempSd, direction, ObType);//create points from the suface of solid
                             CreateSolidfromPoints(mySapModel,ref tempSd, direction, Hight); 
                                 mySolid.Add(tempSd);
@@ -1307,7 +1309,7 @@ namespace HMGSeis
             switch (direction)
             {
 
-                case 0:
+                case 0://Up 
                     {
                         ///
                         /// Up direction
@@ -1347,7 +1349,7 @@ namespace HMGSeis
                         break;
                     }
 
-                case 1:
+                case 1://down
                     {
                         ///
                         /// down direction
@@ -1384,7 +1386,62 @@ namespace HMGSeis
                         }
                         break;
                     }
+                case 2://face 5 
+                    {
+                        ///
+                        /// Up direction
+                        ///
+                        List<int> numbers = new List<int> { 1, 3, 5, 7 };
+                        foreach (int i in numbers)
+                        {
+                            //the top points on bottom,then in the 4 to 7 of array 
+                            int j = i - 1;
+                            mySolid.X[j] = mySolid.X[j+1];
+                            mySolid.Y[j] = mySolid.Y[j+1];
+                            mySolid.Z[j] = mySolid.Z[j+1];
 
+                            mySolid.X[j+1] = mySolid.X[j+1];
+                            mySolid.Y[j+1] = mySolid.Y[j+1] + Hight;
+                            mySolid.Z[j+1] = mySolid.Z[j+1];
+
+                            ret = mySapModel.PointObj.AddCartesian(mySolid.X[j+1],
+                                                                   mySolid.Y[j+1],
+                                                                   mySolid.Z[j+1],
+                                                        ref mySolid.Elements[j+1]);
+
+                        }
+
+
+                        break;
+                    }
+                case 5://face 5 
+                    {
+                        ///
+                        /// Up direction
+                        ///
+                          List<int> numbers = new List<int> { 1, 2, 5, 6 };
+                            foreach (int i in numbers)
+                          {
+                            //the top points on bottom,then in the 4 to 7 of array 
+                                int j = i - 1;
+                                mySolid.X[j+2] = mySolid.X[j];
+                                mySolid.Y[j+2] = mySolid.Y[j];
+                                mySolid.Z[j+2] = mySolid.Z[j];
+
+                                mySolid.X[j] = mySolid.X[j] ;
+                                mySolid.Y[j] = mySolid.Y[j] + Hight;
+                                mySolid.Z[j] = mySolid.Z[j] ;
+
+                                ret = mySapModel.PointObj.AddCartesian(mySolid.X[j],
+                                                                       mySolid.Y[j],
+                                                                       mySolid.Z[j],
+                                                            ref mySolid.Elements[j]);
+
+                            } 
+
+      
+                        break;
+                    }
                 default:
                     {
 
