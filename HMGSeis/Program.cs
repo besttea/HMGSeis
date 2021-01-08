@@ -1348,7 +1348,6 @@ namespace HMGSeis
                         }
                         break;
                     }
-
                 case 1://down
                     {
                         ///
@@ -1410,8 +1409,6 @@ namespace HMGSeis
                                                         ref mySolid.Elements[j+1]);
 
                         }
-
-
                         break;
                     }
                 case 5://face 5 
