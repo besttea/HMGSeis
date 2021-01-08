@@ -165,7 +165,7 @@ namespace HMGSeis
                         //
                         //get information from  group name "1test" 
                         //
-                        string SelectedSolidSetName = "1test1";
+                        string SelectedSolidSetName = "1test";
                         Console.WriteLine("Get Points information from Group:{SelectedSolidSetName}");
                         List<Solid> myPoints_Solid = new List<Solid>();
                         myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSolidSetName, SelectObType,direction, Hight);
@@ -1385,7 +1385,7 @@ namespace HMGSeis
                         }
                         break;
                     }
-                case 2://face 5 
+                case 2://face 2 
                     {
                         ///
                         /// Up direction
@@ -1399,9 +1399,9 @@ namespace HMGSeis
                             mySolid.Y[j] = mySolid.Y[j+1];
                             mySolid.Z[j] = mySolid.Z[j+1];
 
-                            mySolid.X[j+1] = mySolid.X[j+1];
-                            mySolid.Y[j+1] = mySolid.Y[j+1] + Hight;
-                            mySolid.Z[j+1] = mySolid.Z[j+1];
+                            //mySolid.X[j+1] = mySolid.X[j+1];
+                            mySolid.Y[j+1] = mySolid.Y[j+1] - Hight;
+                            //mySolid.Z[j+1] = mySolid.Z[j+1];
 
                             ret = mySapModel.PointObj.AddCartesian(mySolid.X[j+1],
                                                                    mySolid.Y[j+1],
@@ -1437,6 +1437,35 @@ namespace HMGSeis
                             } 
 
       
+                        break;
+                    }
+
+                case 4://face 4 
+                    {
+                        ///
+                        /// Up direction
+                        ///
+                        List<int> numbers = new List<int> { 1, 3, 5, 7 };
+                        foreach (int i in numbers)
+                        {
+                            //the top points on bottom,then in the 4 to 7 of array 
+                            int j = i - 1;
+                            mySolid.X[j + 1] = mySolid.X[j];
+                            mySolid.Y[j + 1] = mySolid.Y[j];
+                            mySolid.Z[j + 1] = mySolid.Z[j];
+
+                            //mySolid.X[j] = mySolid.X[j];
+                            mySolid.Y[j] = mySolid.Y[j] - Hight;
+                            //mySolid.Z[j] = mySolid.Z[j];
+
+                            ret = mySapModel.PointObj.AddCartesian(mySolid.X[j],
+                                                                   mySolid.Y[j],
+                                                                   mySolid.Z[j],
+                                                        ref mySolid.Elements[j]);
+
+                        }
+
+
                         break;
                     }
                 default:
