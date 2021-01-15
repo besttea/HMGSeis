@@ -36,7 +36,7 @@ namespace HMGSeis
             #region SetSap2000 Path & SDB
             string ProgramPath;
 
-            ProgramPath = "D:\\Program Files\\Computers and Structures\\SAP2000 21\\SAP2000.exe";
+            ProgramPath = @"D:\\Program Files\\Computers and Structures\\SAP2000 22\\SAP2000.exe";
             Console.WriteLine("ProgramPath={0}", ProgramPath);
 
 
@@ -44,7 +44,7 @@ namespace HMGSeis
 
             //set it to the desired path of your model
 
-            string ModelDirectory = "G:\\HMGproject\\SapWork201001";
+            string ModelDirectory = @"G:\\HMGproject\\SapWork201001";
             Console.WriteLine("ModelDirectory={0}", ModelDirectory);
             try
             {
@@ -60,16 +60,32 @@ namespace HMGSeis
 
             }
 
-            string ModelName = "HUB20201230SDSeis_2.sdb";
+            string ModelName = "HUB20210101SDSeis.sdb";
 
             string ModelPath = ModelDirectory + System.IO.Path.DirectorySeparatorChar + ModelName;
             Console.WriteLine("ModelPath={0}", ModelPath);
             #endregion
+            
             //dimension the SapObject as cOAPI type
             cOAPI mySapObject = null;
+            
             //Use ret to check if functions return successfully (ret = 0) or fail (ret = nonzero)
             int ret = 0;
+
             #region Prepare for Sap system
+
+            //create API helper object
+            cHelper myHelper;
+            try
+            {
+                myHelper = new Helper();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot create an instance of the Helper object");
+                return;
+            }
+
 
             if (AttachToInstance)
             {
@@ -78,7 +94,12 @@ namespace HMGSeis
                 {   //
                     //Get the Active SapObject
                     //
-                    mySapObject = (cOAPI)System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SapObject");
+                    //mySapObject = (cOAPI)System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SapObject");
+                    //create SapObject
+
+                    mySapObject = myHelper.CreateObjectProgID("CSI.SAP2000.API.SapObject");
+
+
                 }
                 catch (Exception ex)
                 {
@@ -88,17 +109,7 @@ namespace HMGSeis
             }
             else
             {
-                //create API helper object
-                cHelper myHelper;
-                try
-                {
-                    myHelper = new Helper();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Cannot create an instance of the Helper object");
-                    return;
-                }
+               
                 if (SpecifyPath)
                 {
                     //'create an instance of the SapObject from the specified path
@@ -139,7 +150,7 @@ namespace HMGSeis
             cSapModel mySapModel;
             mySapModel = mySapObject.SapModel;
             //initialize model
-            ret = mySapModel.InitializeNewModel((eUnits.kN_m_C));
+            ret = mySapModel.InitializeNewModel((eUnits.N_mm_C));
             //create new blank model
             //ret = mySapModel.File.NewBlank();
             //open a old model
@@ -153,7 +164,8 @@ namespace HMGSeis
                 "please enter a char: ");
             SelectObType = (char)Console.Read();
             double Hight = 10000;
-            int direction=2;
+            int direction=4;
+            int NumberofBox = 10;
             bool flag_Y_reversed = true;//if array need to reversed, then you set this varible is true.
             switch (SelectObType)
             {
@@ -168,7 +180,7 @@ namespace HMGSeis
                         string SelectedSolidSetName = "1test";
                         Console.WriteLine("Get Points information from Group:{SelectedSolidSetName}");
                         List<Solid> myPoints_Solid = new List<Solid>();
-                        myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSolidSetName, SelectObType,direction, Hight);
+                        myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSolidSetName, SelectObType,direction, Hight, NumberofBox);
 
 
                         goto EndSap2000;
@@ -185,7 +197,7 @@ namespace HMGSeis
                         string SelectedSurfaceSetName = "1test1";
                         Console.WriteLine("Get Points information from Group:{SelectedSurfaceSetName}");
                         List<Solid> myPoints_Solid = new List<Solid>();
-                        myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSurfaceSetName, SelectObType, direction,Hight);
+                        myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSurfaceSetName, SelectObType, direction,Hight, NumberofBox);
 
                         goto EndSap2000;
                     }
@@ -254,7 +266,7 @@ namespace HMGSeis
                         string SelectedSolidSetName = "1GR_t1";
                         Console.WriteLine("Get Points information from Group:{SelectedSolidSetName}");
                         List<Solid> myPoints_Solid = new List<Solid>();
-                        myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSolidSetName, SelectObType, direction, Hight);
+                        myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSolidSetName, SelectObType, direction, Hight, NumberofBox);
                         //set material data
                         //
 
@@ -277,7 +289,7 @@ namespace HMGSeis
                         List<Solid> myPoints_Solid = new List<Solid>();
                         List<ZkPoints> SelectPT = new List<ZkPoints>();
 
-                        myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSolidSetName, SelectObType, direction, Hight);
+                        myPoints_Solid = GetObjectfromGroup(mySapModel, SelectedSolidSetName, SelectObType, direction, Hight, NumberofBox);
                         //set material data
                         //
 
@@ -999,6 +1011,8 @@ namespace HMGSeis
             //close sap2000
 
             ret = mySapObject.ApplicationExit(true);
+            mySapModel = null;
+            mySapObject = null;
             //fill SAP2000 result strings
             Console.ReadKey();
             #endregion
@@ -1163,7 +1177,7 @@ namespace HMGSeis
         /// <param name="ret"></param>
         /// <param name="mySapModel"></param>
         /// <param name="SelectedObjectName"></param>
-        private static List<Solid> GetObjectfromGroup(cSapModel mySapModel, string SelectedObjectName,char ObType,int direction,double Hight)
+        private static List<Solid> GetObjectfromGroup(cSapModel mySapModel, string SelectedObjectName,char ObType,int direction,double Hight,int NumberofBox)
         {
             int NumberSelected_Object = 0;
             int[] ObjectType = new int[2800];
@@ -1194,8 +1208,12 @@ namespace HMGSeis
                             ret = mySapModel.SolidObj.GetLocalAxes(ObjectName[i], ref a, ref b, ref c, ref Advanced);
 
                             GetPointsFromSolid(mySapModel, ref tempSd, direction, ObType);//create points from the suface of solid
-                            CreateSolidfromPoints(mySapModel,ref tempSd, direction, Hight); 
+                            for (int j = 0; j < NumberofBox; j++)
+                            {
+                                CreateSolidfromPoints(mySapModel,ref tempSd, direction, Hight); 
                                 mySolid.Add(tempSd);
+                            }
+                            
                             //Console.WriteLine(@"{0},{1},{2},{3},{4}", i, ObjectName[i], PointsName);
                             break;
                         }
@@ -1450,12 +1468,12 @@ namespace HMGSeis
                         {
                             //the top points on bottom,then in the 4 to 7 of array 
                             int j = i - 1;
-                            mySolid.X[j + 1] = mySolid.X[j];
-                            mySolid.Y[j + 1] = mySolid.Y[j];
-                            mySolid.Z[j + 1] = mySolid.Z[j];
+                            mySolid.X[j+1] = mySolid.X[j];
+                            mySolid.Y[j+1] = mySolid.Y[j];
+                            mySolid.Z[j+1] = mySolid.Z[j];
 
                             //mySolid.X[j] = mySolid.X[j];
-                            mySolid.Y[j] = mySolid.Y[j] - Hight;
+                            mySolid.Y[j] = mySolid.Y[j] + Hight;
                             //mySolid.Z[j] = mySolid.Z[j];
 
                             ret = mySapModel.PointObj.AddCartesian(mySolid.X[j],
