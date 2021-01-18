@@ -239,7 +239,6 @@ namespace HMGSeis
                                 zkPoints.Z = z;
 
                             }
-
                             myPoints.Add(zkPoints);
                         }
                         mySolid.SetPointsMatrix(1, "1", myPoints);
